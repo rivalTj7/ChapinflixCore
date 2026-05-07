@@ -1,0 +1,28 @@
+# FastAPI
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
+# MongoDB
+motor>=3.3.2
+pymongo>=4.6.1
+
+# Azure Blob Storage
+azure-storage-blob>=12.19.0
+
+# JWT Auth
+python-jose[cryptography]>=3.3.0
+
+# Config / Validation
+pydantic>=2.7.0
+pydantic-settings>=2.2.1
+
+# Multipart forms (para upload de archivos)
+python-multipart>=0.0.6
+
+# Metrics
+prometheus-client>=0.23.1
+
+# Testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+httpx>=0.25.0

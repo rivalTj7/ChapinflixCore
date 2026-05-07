@@ -1,0 +1,69 @@
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant AS as Auth Service<br/>(Puerto 8000)
+    participant DB as PostgreSQL<br/>(public schema)
+    participant ES as Email Service
+
+    Note over U,ES: CDU 101: Registrar Usuario
+    
+    U->>F: Completa formulario registro
+    F->>AG: POST /auth/api/auth/register
+    AG->>AS: Enruta a auth-service:8000
+    
+    AS->>DB: Query: Verificar usuario existente
+    Note right of DB: SELECT * FROM users<br/>WHERE email = ? OR username = ?
+    DB-->>AS: Resultado (usuario existe/no existe)
+    
+    alt Usuario ya existe
+        AS-->>AG: HTTP 400 - Usuario existe
+        AG-->>F: Error: Usuario existe
+        F-->>U: Mensaje error
+    else Usuario no existe
+        AS->>AS: Encriptar datos sensibles<br/>(email, nombres)
+        AS->>AS: Hash contraseña
+        
+        AS->>DB: INSERT nuevo usuario
+        Note right of DB: INSERT INTO users<br/>(email, username, password_hash,<br/>first_name, last_name, is_active=false)
+        DB-->>AS: user_id generado
+        
+        AS->>AS: Generar token verificación
+        AS->>DB: Guardar token verificación
+        Note right of DB: INSERT INTO email_verification_tokens<br/>(user_id, token, expires_at)
+        DB-->>AS: Token guardado
+        
+        AS->>ES: Enviar email verificación
+        Note right of ES: send_verification_email()<br/>Link: /verify-email?token=xxx
+        ES-->>AS: Email enviado
+        
+        AS-->>AG: HTTP 200 - Registro exitoso
+        AG-->>F: Registro exitoso
+        F-->>U: Mensaje: Verificar email
+        
+        Note over U,ES: Include: CDU 102 - Verificar Email
+        U->>U: Revisa email
+        U->>F: Click link verificación
+        F->>AG: GET /auth/api/auth/verify-email?token=xxx
+        AG->>AS: Enruta a auth-service:8000
+        
+        AS->>DB: Buscar token verificación
+        Note right of DB: SELECT * FROM email_verification_tokens<br/>WHERE token = ? AND expires_at > now()
+        DB-->>AS: Token válido/inválido
+        
+        alt Token válido
+            AS->>DB: Activar usuario
+            Note right of DB: UPDATE users SET<br/>is_verified=true, is_active=true<br/>WHERE id = user_id
+            AS->>DB: Eliminar token usado
+            Note right of DB: DELETE FROM email_verification_tokens<br/>WHERE token = ?
+            DB-->>AS: Usuario activado
+            
+            AS-->>AG: HTTP 200 - Email verificado
+            AG-->>F: Verificación exitosa
+            F-->>U: Cuenta activada, puede iniciar sesión
+        else Token inválido/expirado
+            AS-->>AG: HTTP 400 - Token inválido
+            AG-->>F: Error verificación
+            F-->>U: Error: Token inválido
+        end
+    end

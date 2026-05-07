@@ -1,0 +1,49 @@
+sequenceDiagram
+    participant A as Administrador
+    participant F as Frontend Admin
+    participant AG as API Gateway<br/>(Ingress)
+    participant US as Usuarios Service<br/>(Puerto 8002)
+    participant DB as PostgreSQL<br/>(usuarios schema)
+
+    Note over A,DB: CDU 402–404: Detalle y Gestión de Usuario
+    
+    %% CDU 402
+    A->>F: Selecciona un usuario de la lista
+    F->>AG: GET /ususarios/users/{id}/detail
+    AG->>US: Enruta request
+    US->>DB: SELECT * FROM fn_admin_user_detail($1)
+    DB-->>US: Datos completos usuario
+    US-->>AG: UserDetail JSON
+    AG-->>F: Respuesta con detalle
+    F-->>A: Mostrar perfil completo
+
+    %% CDU 403
+    alt Admin cambia estado (activar/bloquear/verificar/pago)
+        A->>F: Actualiza flag usuario
+        F->>AG: PUT /ususarios/users/{id}/active {is_active:true}
+        AG->>US: Enruta request
+        US->>DB: SELECT fn_admin_user_set_active($1,$2)
+        DB-->>US: OK
+        US-->>AG: {ok:true}
+        AG-->>F: Confirmación
+        F-->>A: Estado actualizado
+    end
+
+    %% CDU 404
+    alt Admin cambia rol (admin/content handler)
+        A->>F: Cambia rol usuario
+        F->>AG: PUT /ususarios/users/{id}/admin {is_admin:true}
+        AG->>US: Enruta request
+        US->>DB: SELECT fn_admin_user_set_admin($1,$2)
+        alt Último admin
+            DB-->>US: Error "Cannot remove last admin"
+            US-->>AG: HTTP 400 error
+            AG-->>F: Mensaje error
+            F-->>A: Advertencia
+        else Cambio válido
+            DB-->>US: OK
+            US-->>AG: {ok:true}
+            AG-->>F: Confirmación
+            F-->>A: Rol actualizado
+        end
+    end

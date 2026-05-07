@@ -1,0 +1,14 @@
+# Credentials (NEVER commit)
+.env
+*.env
+*gcp-key*.json
+*gitlab-ci-key*
+*service-account*.json
+tls.key
+tls.crt
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo

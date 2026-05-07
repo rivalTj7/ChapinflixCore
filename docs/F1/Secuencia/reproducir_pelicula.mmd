@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant U as Usuario (Autenticado)
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant VP as Ver Película Service<br/>(Puerto 8004)
+    participant DB as PostgreSQL<br/>(content schema)
+
+    Note over U,DB: CDU 303: Reproducir Película (Include CDU 302)
+    
+    U->>F: Da clic en "Reproducir"
+    F->>AG: POST /verpeli/movie/{slug}/play
+    AG->>VP: Enruta a verpeli-service:8000→8004
+    
+    VP->>VP: Validar JWT obligatorio<br/>(auth_required)
+    VP->>VP: Extraer user_id y flag is_paid
+    
+    Note over VP,DB: Include CDU 302 – Validar acceso
+    VP->>DB: SELECT * FROM content.fn_movie_can_view(movie_id, is_paid, now())
+    DB-->>VP: allowed / denial_reason
+    
+    alt Acceso permitido
+        VP->>DB: Registrar reproducción
+        Note right of DB: SELECT * FROM content.fn_movie_play(user_id, slug, is_paid, now())
+        DB-->>VP: Resultado (allowed, metadata película)
+        
+        VP-->>AG: HTTP 200 PlayResult
+        AG-->>F: OK + datos reproducción
+        F-->>U: Iniciar player de video
+    else Acceso denegado
+        VP-->>AG: HTTP 403 {allowed: false, reason}
+        AG-->>F: Respuesta con error
+        F-->>U: Mensaje: acceso denegado
+    end

@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant VP as Ver Película Service<br/>(Puerto 8004)
+    participant DB as PostgreSQL<br/>(content schema)
+
+    Note over U,DB: CDU 302: Validar Acceso a Contenido
+    
+    U->>F: Intenta reproducir película
+    F->>AG: GET /verpeli/movie/{slug}/can-view
+    AG->>VP: Enruta a verpeli-service:8000→8004
+    
+    VP->>VP: Extraer user_id y flag is_paid (si autenticado)
+    
+    VP->>DB: Validar acceso
+    Note right of DB: SELECT allowed, denial_reason<br/>FROM content.fn_movie_can_view(movie_id, is_paid, now())
+    DB-->>VP: allowed = true/false,<br/>denial_reason (si aplica)
+    
+    alt Acceso permitido
+        VP-->>AG: {allowed: true}
+        AG-->>F: Puede reproducir
+        F-->>U: Mostrar botón "Reproducir"
+    else Acceso denegado
+        VP-->>AG: {allowed: false, reason}
+        AG-->>F: Respuesta con motivo
+        F-->>U: Mensaje: "Contenido solo para suscriptores" o "Fuera de disponibilidad"
+    end

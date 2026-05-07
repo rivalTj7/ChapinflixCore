@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+  labels:
+    app: prometheus
+data:
+  alert.rules.yml: |
+    groups:
+      - name: chapinflix.rules
+        interval: 30s
+        rules:
+          # CPU Alerts
+          - alert: NodeCPUUsageHigh
+            expr: (100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+            for: 5m
+            labels:
+              severity: warning
+              component: infrastructure
+              project: chapinflix
+            annotations:
+              summary: "Node CPU usage is high (instance {{ $labels.instance }})"
+              description: "Node CPU usage is above 80% (current value: {{ $value }}%)"
+          
+          - alert: PodCPUUsageHigh
+            expr: (sum(rate(container_cpu_usage_seconds_total{namespace="default",pod!="",container!="POD",container!=""}[5m])) by (pod, namespace) * 100) > 80
+            for: 5m
+            labels:
+              severity: warning
+              component: application
+              project: chapinflix
+            annotations:
+              summary: "Pod CPU usage is high (pod {{ $labels.pod }})"
+              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is using more than 80% CPU"
+          
+          # Memory Alerts
+          - alert: PodMemoryUsageHigh
+            expr: (sum(container_memory_working_set_bytes{pod!="",namespace="default",container!="POD",container!=""}) BY (pod, namespace) / sum(container_spec_memory_limit_bytes{pod!="",namespace="default",container!="POD",container!=""}) BY (pod, namespace) * 100) > 85
+            for: 5m
+            labels:
+              severity: warning
+              component: application
+              project: chapinflix
+            annotations:
+              summary: "Pod memory usage is high (pod {{ $labels.pod }})"
+              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is using more than 85% of its memory limit (current: {{ $value }}%)"
+          
+          # Pod Health Alerts
+          - alert: PodCrashLooping
+            expr: rate(kube_pod_container_status_restarts_total{namespace="default"}[15m]) > 0
+            for: 5m
+            labels:
+              severity: critical
+              component: application
+              project: chapinflix
+            annotations:
+              summary: "Pod is crash looping (pod {{ $labels.pod }})"
+              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting frequently"
+          
+          - alert: PodNotReady
+            expr: kube_pod_status_ready{namespace="default", condition="false"} == 1
+            for: 10m
+            labels:
+              severity: warning
+              component: application
+              project: chapinflix
+            annotations:
+              summary: "Pod is not ready (pod {{ $labels.pod }})"
+              description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has been not ready for more than 10 minutes"
+          
+          # Service Availability Alerts
+          - alert: PrometheusTargetDown
+            expr: up == 0
+            for: 1m
+            labels:
+              severity: critical
+              component: monitoring
+              project: chapinflix
+            annotations:
+              summary: "Prometheus target down (instance {{ $labels.instance }})"
+              description: "Prometheus target {{ $labels.instance }} has been down for more than 1 minute"
+          
+          - alert: ChapinflixServiceDown
+            expr: up{job="chapinflix-services"} == 0
+            for: 2m
+            labels:
+              severity: critical
+              component: application
+              project: chapinflix
+            annotations:
+              summary: "Chapinflix service is down (pod {{ $labels.kubernetes_pod_name }})"
+              description: "Chapinflix service {{ $labels.kubernetes_pod_name }} has been down for more than 2 minutes"
+          
+          # Elasticsearch Alerts
+          - alert: ElasticsearchClusterHealthYellow
+            expr: elasticsearch_cluster_health_status{color="yellow"} == 1
+            for: 5m
+            labels:
+              severity: warning
+              component: logging
+              project: chapinflix
+            annotations:
+              summary: "Elasticsearch cluster health is yellow"
+              description: "Elasticsearch cluster health has been yellow for more than 5 minutes"
+          
+          - alert: ElasticsearchClusterHealthRed
+            expr: elasticsearch_cluster_health_status{color="red"} == 1
+            for: 2m
+            labels:
+              severity: critical
+              component: logging
+              project: chapinflix
+            annotations:
+              summary: "Elasticsearch cluster health is red"
+              description: "Elasticsearch cluster health is red. Data loss may occur!"
+          
+          - alert: ElasticsearchDiskSpaceLow
+            expr: elasticsearch_filesystem_data_available_bytes / elasticsearch_filesystem_data_size_bytes * 100 < 20
+            for: 5m
+            labels:
+              severity: warning
+              component: logging
+              project: chapinflix
+            annotations:
+              summary: "Elasticsearch disk space is low"
+              description: "Elasticsearch has less than 20% disk space available (current: {{ $value }}%)"
+          
+          # HPA Alerts
+          - alert: HPAMaxedOut
+            expr: kube_horizontalpodautoscaler_status_current_replicas{namespace="default"} >= kube_horizontalpodautoscaler_spec_max_replicas{namespace="default"}
+            for: 15m
+            labels:
+              severity: warning
+              component: autoscaling
+              project: chapinflix
+            annotations:
+              summary: "HPA has reached maximum replicas (hpa {{ $labels.horizontalpodautoscaler }})"
+              description: "HPA {{ $labels.horizontalpodautoscaler }} has been at maximum replicas for 15 minutes. Consider increasing max replicas."
+          
+          # Storage Alerts
+          - alert: PersistentVolumeSpaceLow
+            expr: (kubelet_volume_stats_available_bytes / kubelet_volume_stats_capacity_bytes) * 100 < 20
+            for: 10m
+            labels:
+              severity: warning
+              component: storage
+              project: chapinflix
+            annotations:
+              summary: "PersistentVolume space is low (pvc {{ $labels.persistentvolumeclaim }})"
+              description: "PersistentVolume {{ $labels.persistentvolumeclaim }} has less than 20% space available"

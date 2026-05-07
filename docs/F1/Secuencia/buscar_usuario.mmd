@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant A as Administrador
+    participant F as Frontend Admin
+    participant AG as API Gateway<br/>(Ingress)
+    participant US as Usuarios Service<br/>(Puerto 8002)
+    participant DB as PostgreSQL<br/>(usuarios schema)
+
+    Note over A,DB: CDU 401: Buscar/Listar Usuarios
+    
+    A->>F: Ingresa filtros de búsqueda<br/>(ej: activos, verificados, pagados)
+    F->>AG: GET /ususarios/users/list?is_active=true&limit=50
+    AG->>US: Enruta a ususarios-service:8000→8002
+    
+    US->>DB: Ejecutar búsqueda con filtros
+    Note right of DB: SELECT * FROM fn_admin_users_list(...filtros...)
+    DB-->>US: Lista de usuarios + total_count
+    
+    US-->>AG: UserListResponse JSON
+    AG-->>F: Respuesta con usuarios filtrados
+    F-->>A: Mostrar tabla con resultados

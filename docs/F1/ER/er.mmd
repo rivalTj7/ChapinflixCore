@@ -1,0 +1,133 @@
+erDiagram
+    %% SCHEMA PUBLIC - Authentication & Users
+    users {
+        SERIAL id PK
+        VARCHAR email UK "UNIQUE"
+        VARCHAR username UK "UNIQUE"  
+        TEXT password_hash
+        VARCHAR first_name
+        VARCHAR last_name
+        BOOLEAN is_active
+        BOOLEAN is_verified
+        BOOLEAN is_paid
+        BOOLEAN is_admin
+        BOOLEAN is_content_handler
+        BOOLEAN two_fa_enabled
+        TEXT two_fa_secret
+        INTEGER failed_login_attempts
+        TIMESTAMP locked_until
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    email_verification_tokens {
+        SERIAL id PK
+        INTEGER user_id FK
+        VARCHAR token UK "UNIQUE"
+        TIMESTAMP expires_at
+        TIMESTAMP created_at
+    }
+    
+    refresh_tokens {
+        SERIAL id PK
+        INTEGER user_id FK
+        TEXT token UK "UNIQUE"
+        TIMESTAMP expires_at
+        TIMESTAMP created_at
+    }
+
+    %% SCHEMA CONTENT - Movie Catalog
+    movie {
+        UUID id PK
+        TEXT slug UK "UNIQUE"
+        TEXT title
+        TEXT synopsis_short
+        TEXT synopsis_long
+        INTEGER duration_minutes
+        DATE release_date
+        SMALLINT classification_id FK
+        UUID studio_id FK
+        TEXT language
+        TEXT country
+        TEXT poster_url
+        TEXT banner_url
+        TEXT trailer_url
+        BOOLEAN is_free
+        TIMESTAMPTZ available_from
+        TIMESTAMPTZ available_until
+        BOOLEAN is_active
+        TIMESTAMPTZ upload_date
+        BIGINT view_count
+        UUID created_by "Logical reference to users"
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+    
+    category {
+        UUID id PK
+        TEXT slug UK "UNIQUE"
+        TEXT name
+        UUID parent_id FK "Self-reference"
+        BOOLEAN is_active
+        TIMESTAMPTZ created_at
+    }
+    
+    movie_category {
+        UUID movie_id PK,FK
+        UUID category_id PK,FK
+    }
+    
+    classification {
+        SMALLSERIAL id PK
+        TEXT code UK "UNIQUE"
+        TEXT name
+        TEXT description
+    }
+    
+    studio {
+        UUID id PK
+        TEXT name UK "UNIQUE"
+        TEXT country
+        TEXT website
+        TIMESTAMPTZ created_at
+    }
+    
+    movie_image {
+        UUID id PK
+        UUID movie_id FK
+        TEXT url
+        TEXT label
+        INTEGER sort_order
+    }
+    
+    favorite {
+        UUID user_id PK "Logical reference"
+        UUID movie_id PK,FK
+    }
+    
+    watchlist {
+        UUID user_id PK "Logical reference"
+        UUID movie_id PK,FK
+    }
+    
+    view_history {
+        BIGSERIAL id PK
+        UUID user_id "Logical reference"
+        UUID movie_id FK
+        TIMESTAMPTZ viewed_at
+    }
+
+    %% Relationships - Schema PUBLIC
+    users ||--o{ email_verification_tokens : "has"
+    users ||--o{ refresh_tokens : "has"
+    
+    %% Relationships - Schema CONTENT
+    classification ||--o{ movie : "classifies"
+    studio ||--o{ movie : "produces"
+    category ||--o{ movie_category : "categorizes"
+    movie ||--o{ movie_category : "belongs_to"
+    category ||--o{ category : "parent_of"
+    movie ||--o{ movie_image : "has_images"
+    movie ||--o{ favorite : "favorited_by"
+    movie ||--o{ watchlist : "watched_by"
+    movie ||--o{ view_history : "viewed_in"

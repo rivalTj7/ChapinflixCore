@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: logging
+  labels:
+    app: logstash
+    component: logging
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+    xpack.monitoring.enabled: false
+  
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    
+    filter {
+      # Parse JSON si el mensaje es JSON
+      if [message] =~ /^\{.*\}$/ {
+        json {
+          source => "message"
+          target => "parsed_json"
+        }
+      }
+      
+      # Extraer información de Kubernetes
+      if [kubernetes] {
+        mutate {
+          add_field => {
+            "k8s_namespace" => "%{[kubernetes][namespace]}"
+            "k8s_pod" => "%{[kubernetes][pod][name]}"
+            "k8s_container" => "%{[kubernetes][container][name]}"
+          }
+        }
+      }
+      
+      # Detectar nivel de log
+      if [message] =~ /(?i)error/ {
+        mutate { add_field => { "log_level" => "ERROR" } }
+      } else if [message] =~ /(?i)warn/ {
+        mutate { add_field => { "log_level" => "WARN" } }
+      } else if [message] =~ /(?i)info/ {
+        mutate { add_field => { "log_level" => "INFO" } }
+      } else if [message] =~ /(?i)debug/ {
+        mutate { add_field => { "log_level" => "DEBUG" } }
+      } else {
+        mutate { add_field => { "log_level" => "UNKNOWN" } }
+      }
+      
+      # Agregar timestamp procesado
+      mutate {
+        add_field => { "processed_at" => "%{@timestamp}" }
+      }
+      
+      # Agregar tags de Chapinflix
+      mutate {
+        add_tag => [ "chapinflix", "gke" ]
+      }
+    }
+    
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch.logging.svc.cluster.local:9200"]
+        index => "chapinflix-logs-%{+YYYY.MM.dd}"
+        manage_template => true
+        template_name => "chapinflix"
+        template_overwrite => true
+      }
+      
+      # Debug output (opcional, comentar en producción)
+      # stdout { codec => rubydebug }
+    }

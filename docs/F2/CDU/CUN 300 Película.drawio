@@ -1,0 +1,58 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="Page-1" id="gI-r8ik6v6w2Qld19uYu">
+    <mxGraphModel dx="1665" dy="875" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="VEd3gdUxjoVDEMygO8gf-2" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Usuario&lt;/font&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="30" y="160" width="90" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="VEd3gdUxjoVDEMygO8gf-3" value="" style="endArrow=none;html=1;rounded=0;exitX=0.75;exitY=0.1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.497;entryY=0.252;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="VEd3gdUxjoVDEMygO8gf-2" target="VEd3gdUxjoVDEMygO8gf-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="35" as="sourcePoint" />
+            <mxPoint x="260" y="-15" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="VEd3gdUxjoVDEMygO8gf-13" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="160" y="40" width="770" height="800" as="geometry" />
+        </mxCell>
+        <mxCell id="VEd3gdUxjoVDEMygO8gf-14" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;CUN 300: Ver Película&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="160" y="40" width="770" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="VEd3gdUxjoVDEMygO8gf-15" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CDU 301: Consultar detalles de película&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="460" y="200" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="VEd3gdUxjoVDEMygO8gf-19" value="" style="endArrow=none;html=1;rounded=0;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="VEd3gdUxjoVDEMygO8gf-2" target="VEd3gdUxjoVDEMygO8gf-15" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="440" as="sourcePoint" />
+            <mxPoint x="690" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6la1B8YGXLmLzaeoYYnq-1" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CDU 302: Validar acceso a contenido&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="670" y="490" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="6la1B8YGXLmLzaeoYYnq-6" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;CDU 303: Reporducir película&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="220" y="490" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="6la1B8YGXLmLzaeoYYnq-25" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&lt;/font&gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" source="6la1B8YGXLmLzaeoYYnq-6" target="VEd3gdUxjoVDEMygO8gf-15" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="560" y="200" as="sourcePoint" />
+            <mxPoint x="720" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6la1B8YGXLmLzaeoYYnq-27" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;&lt;/font&gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" parent="1" source="6la1B8YGXLmLzaeoYYnq-1" target="VEd3gdUxjoVDEMygO8gf-15" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="660" y="520" as="sourcePoint" />
+            <mxPoint x="1110" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6la1B8YGXLmLzaeoYYnq-29" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&lt;/font&gt;" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="6la1B8YGXLmLzaeoYYnq-6" target="6la1B8YGXLmLzaeoYYnq-1" edge="1">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="410" y="520" as="sourcePoint" />
+            <mxPoint x="500" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

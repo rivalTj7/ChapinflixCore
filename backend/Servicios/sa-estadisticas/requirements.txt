@@ -1,0 +1,25 @@
+# FastAPI
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
+# PostgreSQL
+asyncpg>=0.29.0
+
+# JWT Auth
+python-jose[cryptography]>=3.3.0
+
+# Config / Validation
+pydantic>=2.7.0
+pydantic-settings>=2.2.1
+
+# Metrics
+prometheus-client>=0.23.1
+
+# Testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+httpx>=0.25.0
+
+# MongoDB (para sync con catálogo)
+motor>=3.3.2
+pymongo>=4.6.1

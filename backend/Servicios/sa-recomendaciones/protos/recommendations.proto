@@ -1,0 +1,73 @@
+// recommendations.proto
+// Definición del servicio gRPC de recomendaciones
+syntax = "proto3";
+
+package recommendations;
+
+// Servicio de Recomendaciones
+service RecommendationsService {
+  // Recomendaciones generales (más populares)
+  rpc GetGeneralRecommendations(GeneralRecommendationsRequest) returns (RecommendationsResponse);
+  
+  // Recomendaciones por género favorito del usuario
+  rpc GetGenreBasedRecommendations(UserRecommendationsRequest) returns (RecommendationsResponse);
+  
+  // Recomendaciones por usuarios similares (collaborative filtering)
+  rpc GetCollaborativeRecommendations(UserRecommendationsRequest) returns (RecommendationsResponse);
+  
+  // Health check
+  rpc HealthCheck(Empty) returns (HealthResponse);
+}
+
+// ==========================================
+// REQUEST MESSAGES
+// ==========================================
+
+// Request para recomendaciones generales
+message GeneralRecommendationsRequest {
+  int32 limit = 1;  // Cantidad de recomendaciones (default: 10)
+  repeated string exclude_content_ids = 2;  // IDs a excluir
+}
+
+// Request para recomendaciones personalizadas
+message UserRecommendationsRequest {
+  int32 user_id = 1;  // ID del usuario
+  int32 limit = 2;    // Cantidad de recomendaciones
+  repeated string exclude_content_ids = 3;  // IDs a excluir
+}
+
+// Empty message para health check
+message Empty {}
+
+// ==========================================
+// RESPONSE MESSAGES
+// ==========================================
+
+// Response con lista de recomendaciones
+message RecommendationsResponse {
+  repeated MovieRecommendation recommendations = 1;
+  int32 total = 2;
+  string recommendation_type = 3;  // "general", "genre_based", "collaborative"
+}
+
+// Estructura de una recomendación
+message MovieRecommendation {
+  string content_id = 1;
+  string title = 2;
+  string slug = 3;
+  string synopsis_short = 4;
+  string poster_url = 5;
+  string classification_code = 6;
+  int32 duration_minutes = 7;
+  bool is_free = 8;
+  float relevance_score = 9;  // Score de relevancia (0.0 - 1.0)
+  string reason = 10;  // Por qué se recomienda
+  repeated string genres = 11;
+}
+
+// Health check response
+message HealthResponse {
+  string status = 1;   // "healthy", "unhealthy"
+  string service = 2;  // "recommendations"
+  string version = 3;  // "1.0.0"
+}

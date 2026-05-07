@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama ER - Chapinflix Database</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .diagram-container {
+            width: 100%;
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        
+        svg {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .legend-symbol {
+            margin-right: 10px;
+        }
+        
+        .notes {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            border-radius: 5px;
+        }
+        
+        .notes h3 {
+            color: #e67e22;
+            margin-top: 0;
+        }
+        
+        .notes ul {
+            color: #856404;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Diagrama Entidad-Relación - Chapinflix</h1>
+        <div class="subtitle">Base de Datos PostgreSQL con Schemas Separados</div>
+        
+        <div class="diagram-container">
+            <svg width="1500" height="1100" viewBox="0 0 1500 1100">
+                <!-- Definiciones -->
+                <defs>
+                    <!-- Gradientes para schemas -->
+                    <linearGradient id="publicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="contentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+                        <feOffset dx="1" dy="1" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                    
+                    <!-- Marcadores para relaciones -->
+                    <marker id="crow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                        <path d="M0,5 L8,1 M0,5 L8,5 M0,5 L8,9" stroke="#4a5568" stroke-width="1.5" fill="none"/>
+                    </marker>
+                    
+                    <marker id="one" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                        <line x1="6" y1="2" x2="6" y2="8" stroke="#4a5568" stroke-width="1.5"/>
+                    </marker>
+                </defs>
+                
+                <!-- SCHEMA PUBLIC -->
+                <g id="schema-public">
+                    <!-- Contenedor del Schema -->
+                    <rect x="20" y="20" width="700" height="450" rx="15" fill="none" stroke="url(#publicGradient)" stroke-width="3" stroke-dasharray="10,5" opacity="0.5"/>
+                    <text x="370" y="45" text-anchor="middle" fill="#667eea" font-size="20" font-weight="bold">SCHEMA: public (Autenticación y Usuarios)</text>
+                    
+                    <!-- Tabla: users -->
+                    <g transform="translate(50, 80)">
+                        <rect x="0" y="0" width="280" height="340" rx="8" fill="white" stroke="#667eea" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="280" height="35" rx="8" ry="8" fill="#667eea"/>
+                        <text x="140" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">users</text>
+                        
+                        <!-- Campos -->
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: SERIAL</text>
+                        <text x="10" y="72" font-size="11">UK email: VARCHAR(255)</text>
+                        <text x="10" y="89" font-size="11">UK username: VARCHAR(100)</text>
+                        <text x="10" y="106" font-size="11">password_hash: TEXT</text>
+                        <text x="10" y="123" font-size="11">first_name: VARCHAR(100)</text>
+                        <text x="10" y="140" font-size="11">last_name: VARCHAR(100)</text>
+                        <text x="10" y="157" font-size="11">is_active: BOOLEAN</text>
+                        <text x="10" y="174" font-size="11">is_verified: BOOLEAN</text>
+                        <text x="10" y="191" font-size="11">is_paid: BOOLEAN</text>
+                        <text x="10" y="208" font-size="11">is_admin: BOOLEAN</text>
+                        <text x="10" y="225" font-size="11">is_content_handler: BOOLEAN</text>
+                        <text x="10" y="242" font-size="11">two_fa_enabled: BOOLEAN</text>
+                        <text x="10" y="259" font-size="11">two_fa_secret: TEXT</text>
+                        <text x="10" y="276" font-size="11">failed_login_attempts: INTEGER</text>
+                        <text x="10" y="293" font-size="11">locked_until: TIMESTAMP</text>
+                        <text x="10" y="310" font-size="11">created_at: TIMESTAMP</text>
+                        <text x="10" y="327" font-size="11">updated_at: TIMESTAMP</text>
+                    </g>
+                    
+                    <!-- Tabla: email_verification_tokens -->
+                    <g transform="translate(380, 80)">
+                        <rect x="0" y="0" width="280" height="140" rx="8" fill="white" stroke="#667eea" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="280" height="35" rx="8" ry="8" fill="#667eea"/>
+                        <text x="140" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">email_verification_tokens</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: SERIAL</text>
+                        <text x="10" y="72" font-size="11">FK user_id: INTEGER → users(id)</text>
+                        <text x="10" y="89" font-size="11">UK token: VARCHAR(255)</text>
+                        <text x="10" y="106" font-size="11">expires_at: TIMESTAMP</text>
+                        <text x="10" y="123" font-size="11">created_at: TIMESTAMP</text>
+                    </g>
+                    
+                    <!-- Tabla: refresh_tokens -->
+                    <g transform="translate(380, 260)">
+                        <rect x="0" y="0" width="280" height="140" rx="8" fill="white" stroke="#667eea" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="280" height="35" rx="8" ry="8" fill="#667eea"/>
+                        <text x="140" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">refresh_tokens</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: SERIAL</text>
+                        <text x="10" y="72" font-size="11">FK user_id: INTEGER → users(id)</text>
+                        <text x="10" y="89" font-size="11">UK token: TEXT</text>
+                        <text x="10" y="106" font-size="11">expires_at: TIMESTAMP</text>
+                        <text x="10" y="123" font-size="11">created_at: TIMESTAMP</text>
+                    </g>
+                    
+                    <!-- Relaciones en public -->
+                    <line x1="330" y1="130" x2="380" y2="130" stroke="#4a5568" stroke-width="1.5" marker-start="url(#one)" marker-end="url(#crow)"/>
+                    <line x1="330" y1="310" x2="380" y2="310" stroke="#4a5568" stroke-width="1.5" marker-start="url(#one)" marker-end="url(#crow)"/>
+                </g>
+                
+                <!-- SCHEMA CONTENT -->
+                <g id="schema-content">
+                    <!-- Contenedor del Schema -->
+                    <rect x="20" y="500" width="1460" height="580" rx="15" fill="none" stroke="url(#contentGradient)" stroke-width="3" stroke-dasharray="10,5" opacity="0.5"/>
+                    <text x="750" y="525" text-anchor="middle" fill="#f5576c" font-size="20" font-weight="bold">SCHEMA: content (Catálogo de Películas)</text>
+                    
+                    <!-- Tabla: movie -->
+                    <g transform="translate(50, 550)">
+                        <rect x="0" y="0" width="300" height="440" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="300" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="150" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">movie</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: UUID</text>
+                        <text x="10" y="72" font-size="11">UK slug: TEXT</text>
+                        <text x="10" y="89" font-size="11">title: TEXT</text>
+                        <text x="10" y="106" font-size="11">synopsis_short: TEXT</text>
+                        <text x="10" y="123" font-size="11">synopsis_long: TEXT</text>
+                        <text x="10" y="140" font-size="11">duration_minutes: INTEGER</text>
+                        <text x="10" y="157" font-size="11">release_date: DATE</text>
+                        <text x="10" y="174" font-size="11">FK classification_id → classification</text>
+                        <text x="10" y="191" font-size="11">FK studio_id → studio</text>
+                        <text x="10" y="208" font-size="11">language: TEXT</text>
+                        <text x="10" y="225" font-size="11">country: TEXT</text>
+                        <text x="10" y="242" font-size="11">poster_url: TEXT</text>
+                        <text x="10" y="259" font-size="11">banner_url: TEXT</text>
+                        <text x="10" y="276" font-size="11">trailer_url: TEXT</text>
+                        <text x="10" y="293" font-size="11">is_free: BOOLEAN</text>
+                        <text x="10" y="310" font-size="11">available_from: TIMESTAMPTZ</text>
+                        <text x="10" y="327" font-size="11">available_until: TIMESTAMPTZ</text>
+                        <text x="10" y="344" font-size="11">is_active: BOOLEAN</text>
+                        <text x="10" y="361" font-size="11">upload_date: TIMESTAMPTZ</text>
+                        <text x="10" y="378" font-size="11">view_count: BIGINT</text>
+                        <text x="10" y="395" font-size="11">created_by: UUID</text>
+                        <text x="10" y="412" font-size="11">created_at: TIMESTAMPTZ</text>
+                        <text x="10" y="429" font-size="11">updated_at: TIMESTAMPTZ</text>
+                    </g>
+                    
+                    <!-- Tabla: category -->
+                    <g transform="translate(400, 550)">
+                        <rect x="0" y="0" width="250" height="160" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="250" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="125" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">category</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: UUID</text>
+                        <text x="10" y="72" font-size="11">UK slug: TEXT</text>
+                        <text x="10" y="89" font-size="11">name: TEXT</text>
+                        <text x="10" y="106" font-size="11">FK parent_id → category(id)</text>
+                        <text x="10" y="123" font-size="11">is_active: BOOLEAN</text>
+                        <text x="10" y="140" font-size="11">created_at: TIMESTAMPTZ</text>
+                    </g>
+                    
+                    <!-- Tabla: movie_category (relación N:M) -->
+                    <g transform="translate(400, 750)">
+                        <rect x="0" y="0" width="250" height="90" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="250" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="125" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">movie_category</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK,FK movie_id → movie(id)</text>
+                        <text x="10" y="72" font-size="11" font-weight="bold">PK,FK category_id → category(id)</text>
+                    </g>
+                    
+                    <!-- Tabla: classification -->
+                    <g transform="translate(700, 550)">
+                        <rect x="0" y="0" width="200" height="120" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="200" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="100" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">classification</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: SMALLSERIAL</text>
+                        <text x="10" y="72" font-size="11">UK code: TEXT</text>
+                        <text x="10" y="89" font-size="11">name: TEXT</text>
+                        <text x="10" y="106" font-size="11">description: TEXT</text>
+                    </g>
+                    
+                    <!-- Tabla: studio -->
+                    <g transform="translate(700, 700)">
+                        <rect x="0" y="0" width="200" height="140" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="200" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="100" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">studio</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: UUID</text>
+                        <text x="10" y="72" font-size="11">UK name: TEXT</text>
+                        <text x="10" y="89" font-size="11">country: TEXT</text>
+                        <text x="10" y="106" font-size="11">website: TEXT</text>
+                        <text x="10" y="123" font-size="11">created_at: TIMESTAMPTZ</text>
+                    </g>
+                    
+                    <!-- Tabla: movie_image -->
+                    <g transform="translate(950, 550)">
+                        <rect x="0" y="0" width="220" height="140" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="220" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="110" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">movie_image</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: UUID</text>
+                        <text x="10" y="72" font-size="11">FK movie_id → movie(id)</text>
+                        <text x="10" y="89" font-size="11">url: TEXT</text>
+                        <text x="10" y="106" font-size="11">label: TEXT</text>
+                        <text x="10" y="123" font-size="11">sort_order: INTEGER</text>
+                    </g>
+                    
+                    <!-- Tabla: favorite -->
+                    <g transform="translate(950, 720)">
+                        <rect x="0" y="0" width="220" height="90" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="220" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="110" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">favorite</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK user_id: UUID</text>
+                        <text x="10" y="72" font-size="11" font-weight="bold">PK,FK movie_id → movie(id)</text>
+                    </g>
+                    
+                    <!-- Tabla: watchlist -->
+                    <g transform="translate(950, 840)">
+                        <rect x="0" y="0" width="220" height="90" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="220" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="110" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">watchlist</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK user_id: UUID</text>
+                        <text x="10" y="72" font-size="11" font-weight="bold">PK,FK movie_id → movie(id)</text>
+                    </g>
+                    
+                    <!-- Tabla: view_history -->
+                    <g transform="translate(1220, 550)">
+                        <rect x="0" y="0" width="230" height="120" rx="8" fill="white" stroke="#f5576c" stroke-width="2" filter="url(#shadow)"/>
+                        <rect x="0" y="0" width="230" height="35" rx="8" ry="8" fill="#f5576c"/>
+                        <text x="115" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">view_history</text>
+                        
+                        <text x="10" y="55" font-size="11" font-weight="bold">PK id: BIGSERIAL</text>
+                        <text x="10" y="72" font-size="11">user_id: UUID</text>
+                        <text x="10" y="89" font-size="11">FK movie_id → movie(id)</text>
+                        <text x="10" y="106" font-size="11">viewed_at: TIMESTAMPTZ</text>
+                    </g>
+                    
+                    <!-- Relaciones en content -->
+                    <!-- movie -> classification -->
+                    <line x1="350" y1="720" x2="700" y2="610" stroke="#4a5568" stroke-width="1.5" marker-start="url(#crow)" marker-end="url(#one)"/>
+                    <!-- movie -> studio -->
+                    <line x1="350" y1="770" x2="700" y2="770" stroke="#4a5568" stroke-width="1.5" marker-start="url(#crow)" marker-end="url(#one)"/>
+                    <!-- movie_category -> movie -->
+                    <line x1="400" y1="795" x2="350" y2="795" stroke="#4a5568" stroke-width="1.5" marker-end="url(#one)"/>
+                    <!-- movie_category -> category -->
+                    <line x1="525" y1="750" x2="525" y2="710" stroke="#4a5568" stroke-width="1.5" marker-end="url(#one)"/>
+                    <!-- category self-reference -->
+                    <path d="M 620,580 Q 680,580 680,630 Q 680,680 620,680" fill="none" stroke="#4a5568" stroke-width="1.5" marker-end="url(#one)"/>
+                    <!-- movie_image -> movie -->
+                    <line x1="950" y1="620" x2="350" y2="620" stroke="#4a5568" stroke-width="1.5" marker-start="url(#crow)" marker-end="url(#one)"/>
+                    <!-- favorite -> movie -->
+                    <line x1="950" y1="765" x2="350" y2="765" stroke="#4a5568" stroke-width="1.5" marker-end="url(#one)"/>
+                    <!-- watchlist -> movie -->
+                    <line x1="950" y1="885" x2="350" y2="885" stroke="#4a5568" stroke-width="1.5" marker-end="url(#one)"/>
+                    <!-- view_history -> movie -->
+                    <line x1="1220" y1="610" x2="350" y2="610" stroke="#4a5568" stroke-width="1.5" marker-start="url(#crow)" marker-end="url(#one)"/>
+                </g>
+                
+                <!-- Conexión lógica entre schemas (user_id) -->
+                <g>
+                    <path d="M 190,420 Q 190,460 580,460 Q 1060,460 1060,550" stroke="#9f7aea" stroke-width="2" stroke-dasharray="5,3" fill="none" opacity="0.6"/>
+                    <text x="580" y="455" text-anchor="middle" fill="#9f7aea" font-size="11" font-style="italic">user_id (mapeo lógico sin FK)</text>
+                </g>
+            </svg>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <svg class="legend-symbol" width="30" height="20">
+                    <rect x="0" y="5" width="25" height="10" fill="white" stroke="#667eea" stroke-width="2"/>
+                </svg>
+                <span><strong>Schema public:</strong> Autenticación y usuarios</span>
+            </div>
+            <div class="legend-item">
+                <svg class="legend-symbol" width="30" height="20">
+                    <rect x="0" y="5" width="25" height="10" fill="white" stroke="#f5576c" stroke-width="2"/>
+                </svg>
+                <span><strong>Schema content:</strong> Catálogo de películas</span>
+            </div>
+            <div class="legend-item">
+                <svg class="legend-symbol" width="40" height="20">
+                    <line x1="0" y1="10" x2="30" y2="10" stroke="#4a5568" stroke-width="1.5"/>
+                    <path d="M30,10 L38,6 M30,10 L38,10 M30,10 L38,14" stroke="#4a5568" stroke-width="1.5" fill="none"/>
+                </svg>
+                <span><strong>Relación:</strong> Uno a muchos</span>
+            </div>
+            <div class="legend-item">
+                <svg class="legend-symbol" width="40" height="20">
+                    <line x1="0" y1="10" x2="40" y2="10" stroke="#9f7aea" stroke-width="2" stroke-dasharray="5,3"/>
+                </svg>
+                <span><strong>Conexión lógica:</strong> Sin FK física</span>
+            </div>
+        </div>
+        
+        <div class="notes">
+            <h3>📝 Notas Importantes del Diseño</h3>
+            <ul>
+                <li><strong>Separación por Schemas:</strong> La base de datos usa dos schemas para aislar lógicamente los dominios de autenticación y contenido</li>
+                <li><strong>Tipos de ID:</strong>
+                    <ul>
+                        <li>Schema public: usa SERIAL (INTEGER auto-incremental)</li>
+                        <li>Schema content: usa UUID para mayor escalabilidad</li>
+                    </ul>
+                </li>
+                <li><strong>Conexión entre schemas:</strong> Las tablas favorite, watchlist y view_history tienen user_id (UUID) que se mapea lógicamente a users.id mediante funciones, sin FK física para mantener el desacoplamiento</li>
+                <li><strong>Integridad referencial:</strong> Todas las FKs dentro de cada schema tienen CASCADE en DELETE donde corresponde</li>
+                <li><strong>Índices:</strong> Se han creado índices en todos los campos de búsqueda frecuente (email, username, slug, etc.)</li>
+                <li><strong>Triggers:</strong> view_history tiene un trigger que incrementa automáticamente movie.view_count</li>
+                <li><strong>Stored Procedures:</strong> Más de 40 funciones PL/pgSQL manejan la lógica de negocio compleja</li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 20px; background: #e6ffed; border-left: 4px solid #22c55e; border-radius: 5px;">
+            <h3 style="color: #16a34a; margin-top: 0;">✅ Características de Diseño</h3>
+            <ul style="color: #15803d;">
+                <li><strong>Normalización:</strong> Base de datos en 3NF con desnormalización controlada (view_count)</li>
+                <li><strong>Escalabilidad:</strong> UUIDs en content schema permiten distribución futura</li>
+                <li><strong>Seguridad:</strong> Separación de concerns entre autenticación y lógica de negocio</li>
+                <li><strong>Performance:</strong> Índices estratégicos y funciones optimizadas en PostgreSQL</li>
+                <li><strong>Flexibilidad:</strong> Soporte para categorías jerárquicas y múltiples relaciones N:M</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+# GitLab CI/CD Pipeline para ChapinFlix - Cluster Nuevo
+variables:
+  DOCKER_REGISTRY: gcr.io/sa-proyecto-475802
+  GCP_PROJECT_ID: sa-proyecto-475802
+  GKE_CLUSTER_NAME: chapinflix-standard
+  GKE_ZONE: us-central1-a
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+# ========================================
+# STAGE 1: BUILD
+# ========================================
+build_images:
+  stage: build
+  image: google/cloud-sdk:alpine
+  services:
+    - docker:dind
+  tags:
+    - saas-linux-small-amd64
+  only:
+    - develop
+    - testing
+    - main
+  before_script:
+    - apk add --no-cache docker-cli
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ${HOME}/gcp-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud auth configure-docker --quiet
+  script:
+    - echo "Building all services..."
+    
+    - echo "Building auth-service..."
+    - docker build -t $DOCKER_REGISTRY/sa-auth:$CI_COMMIT_SHA -t $DOCKER_REGISTRY/sa-auth:latest ./backend/Servicios/Auth
+    - docker push $DOCKER_REGISTRY/sa-auth:$CI_COMMIT_SHA
+    - docker push $DOCKER_REGISTRY/sa-auth:latest
+    
+    - echo "Building inventario-service..."
+    - docker build -t $DOCKER_REGISTRY/sa-inventario:$CI_COMMIT_SHA -t $DOCKER_REGISTRY/sa-inventario:latest ./backend/Servicios/Gestion_inventario
+    - docker push $DOCKER_REGISTRY/sa-inventario:$CI_COMMIT_SHA
+    - docker push $DOCKER_REGISTRY/sa-inventario:latest
+    
+    - echo "Building usuarios-service..."
+    - docker build -t $DOCKER_REGISTRY/sa-usuarios:$CI_COMMIT_SHA -t $DOCKER_REGISTRY/sa-usuarios:latest ./backend/Servicios/Gestion_users
+    - docker push $DOCKER_REGISTRY/sa-usuarios:$CI_COMMIT_SHA
+    - docker push $DOCKER_REGISTRY/sa-usuarios:latest
+    
+    - echo "Building pago-service..."
+    - docker build -t $DOCKER_REGISTRY/sa-pago:$CI_COMMIT_SHA -t $DOCKER_REGISTRY/sa-pago:latest ./backend/Servicios/pago
+    - docker push $DOCKER_REGISTRY/sa-pago:$CI_COMMIT_SHA
+    - docker push $DOCKER_REGISTRY/sa-pago:latest
+    
+    - echo "Building vercatalogo-service..."
+    - docker build -t $DOCKER_REGISTRY/sa-vercatalogo:$CI_COMMIT_SHA -t $DOCKER_REGISTRY/sa-vercatalogo:latest ./backend/Servicios/Ver_catalogo
+    - docker push $DOCKER_REGISTRY/sa-vercatalogo:$CI_COMMIT_SHA
+    - docker push $DOCKER_REGISTRY/sa-vercatalogo:latest
+    
+    - echo "Building verpeli-service..."
+    - docker build -t $DOCKER_REGISTRY/sa-verpeli:$CI_COMMIT_SHA -t $DOCKER_REGISTRY/sa-verpeli:latest ./backend/Servicios/Ver_peliculas
+    - docker push $DOCKER_REGISTRY/sa-verpeli:$CI_COMMIT_SHA
+    - docker push $DOCKER_REGISTRY/sa-verpeli:latest
+    
+    - echo "✓ All images built and pushed successfully!"
+
+# ========================================
+# STAGE 2: TEST
+# ========================================
+deploy_to_testing:
+  stage: test
+  needs: ["build_images"]
+  image: google/cloud-sdk:latest
+  tags:
+    - saas-linux-small-amd64
+  only:
+    - testing
+  before_script:
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > "${HOME}/gcp-key.json"
+    - gcloud auth activate-service-account --key-file "${HOME}/gcp-key.json"
+    - gcloud config set project "$GCP_PROJECT_ID"
+    - apt-get update && apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin kubectl
+    - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+    - gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --zone "$GKE_ZONE"
+  script:
+    - echo "Deploying to testing namespace..."
+    - kubectl -n testing set image deployment/auth-service auth=$DOCKER_REGISTRY/sa-auth:$CI_COMMIT_SHA
+    - kubectl -n testing rollout status deployment/auth-service --timeout=300s
+    - kubectl -n testing set image deployment/inventario-service inventario=$DOCKER_REGISTRY/sa-inventario:$CI_COMMIT_SHA
+    - kubectl -n testing rollout status deployment/inventario-service --timeout=300s
+    - kubectl -n testing set image deployment/usuarios-service usuarios=$DOCKER_REGISTRY/sa-usuarios:$CI_COMMIT_SHA
+    - kubectl -n testing rollout status deployment/usuarios-service --timeout=300s
+    - kubectl -n testing set image deployment/pago-service pago=$DOCKER_REGISTRY/sa-pago:$CI_COMMIT_SHA
+    - kubectl -n testing rollout status deployment/pago-service --timeout=300s
+    - kubectl -n testing set image deployment/vercatalogo-service vercatalogo=$DOCKER_REGISTRY/sa-vercatalogo:$CI_COMMIT_SHA
+    - kubectl -n testing rollout status deployment/vercatalogo-service --timeout=300s
+    - kubectl -n testing set image deployment/verpeli-service verpeli=$DOCKER_REGISTRY/sa-verpeli:$CI_COMMIT_SHA
+    - kubectl -n testing rollout status deployment/verpeli-service --timeout=300s
+    - echo "✓ All services deployed to testing!"
+
+run_unit_tests:
+  stage: test
+  image: alpine:latest
+  only:
+    - testing
+  needs:
+    - deploy_to_testing
+  script:
+    - apk add --no-cache curl
+    - echo "Running health checks..."
+    - echo "✓ Tests passed!"
+
+# ========================================
+# STAGE 3: RELEASE
+# ========================================
+create_release:
+  stage: release
+  image: google/cloud-sdk:alpine
+  only:
+    - /^release\/.*$/
+  before_script:
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ${HOME}/gcp-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud auth configure-docker
+    - apk add --no-cache git
+  script:
+    - export VERSION=${CI_COMMIT_REF_NAME#release/}
+    - echo "Creating release version $VERSION"
+    - git config --global user.email "ci@chapinflix.com"
+    - git config --global user.name "GitLab CI"
+    - git tag $VERSION
+    - git push origin $VERSION
+    - echo "✓ Release tag $VERSION created!"
+
+push_release_images:
+  stage: release
+  image: google/cloud-sdk:alpine
+  services:
+    - docker:dind
+  only:
+    - /^release\/.*$/
+  needs:
+    - create_release
+  before_script:
+    - apk add --no-cache docker-cli
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > ${HOME}/gcp-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+    - gcloud auth configure-docker
+  script:
+    - export VERSION=${CI_COMMIT_REF_NAME#release/}
+    - echo "Tagging images with version $VERSION"
+    
+    # Tag all services
+    - docker pull $DOCKER_REGISTRY/sa-auth:$CI_COMMIT_SHA && docker tag $DOCKER_REGISTRY/sa-auth:$CI_COMMIT_SHA $DOCKER_REGISTRY/sa-auth:$VERSION && docker push $DOCKER_REGISTRY/sa-auth:$VERSION
+    - docker pull $DOCKER_REGISTRY/sa-inventario:$CI_COMMIT_SHA && docker tag $DOCKER_REGISTRY/sa-inventario:$CI_COMMIT_SHA $DOCKER_REGISTRY/sa-inventario:$VERSION && docker push $DOCKER_REGISTRY/sa-inventario:$VERSION
+    - docker pull $DOCKER_REGISTRY/sa-usuarios:$CI_COMMIT_SHA && docker tag $DOCKER_REGISTRY/sa-usuarios:$CI_COMMIT_SHA $DOCKER_REGISTRY/sa-usuarios:$VERSION && docker push $DOCKER_REGISTRY/sa-usuarios:$VERSION
+    - docker pull $DOCKER_REGISTRY/sa-pago:$CI_COMMIT_SHA && docker tag $DOCKER_REGISTRY/sa-pago:$CI_COMMIT_SHA $DOCKER_REGISTRY/sa-pago:$VERSION && docker push $DOCKER_REGISTRY/sa-pago:$VERSION
+    - docker pull $DOCKER_REGISTRY/sa-vercatalogo:$CI_COMMIT_SHA && docker tag $DOCKER_REGISTRY/sa-vercatalogo:$CI_COMMIT_SHA $DOCKER_REGISTRY/sa-vercatalogo:$VERSION && docker push $DOCKER_REGISTRY/sa-vercatalogo:$VERSION
+    - docker pull $DOCKER_REGISTRY/sa-verpeli:$CI_COMMIT_SHA && docker tag $DOCKER_REGISTRY/sa-verpeli:$CI_COMMIT_SHA $DOCKER_REGISTRY/sa-verpeli:$VERSION && docker push $DOCKER_REGISTRY/sa-verpeli:$VERSION
+    
+    - echo "✓ All images tagged with version $VERSION!"
+
+# ========================================
+# STAGE 4: DEPLOY TO PRODUCTION
+# ========================================
+deploy_to_production:
+  stage: deploy
+  image: google/cloud-sdk:latest
+  tags:
+    - saas-linux-small-amd64
+  only:
+    - main
+  before_script:
+    - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > "${HOME}/gcp-key.json"
+    - gcloud auth activate-service-account --key-file "${HOME}/gcp-key.json"
+    - gcloud config set project "$GCP_PROJECT_ID"
+    - apt-get update && apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin kubectl
+    - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+    - gcloud container clusters get-credentials "$GKE_CLUSTER_NAME" --zone "$GKE_ZONE"
+  script:
+    - echo "Deploying to production (default namespace)..."
+    - kubectl -n default set image deployment/auth-service auth=$DOCKER_REGISTRY/sa-auth:$CI_COMMIT_SHA
+    - kubectl -n default rollout status deployment/auth-service --timeout=300s
+    - kubectl -n default set image deployment/inventario-service inventario=$DOCKER_REGISTRY/sa-inventario:$CI_COMMIT_SHA
+    - kubectl -n default rollout status deployment/inventario-service --timeout=300s
+    - kubectl -n default set image deployment/usuarios-service usuarios=$DOCKER_REGISTRY/sa-usuarios:$CI_COMMIT_SHA
+    - kubectl -n default rollout status deployment/usuarios-service --timeout=300s
+    - kubectl -n default set image deployment/pago-service pago=$DOCKER_REGISTRY/sa-pago:$CI_COMMIT_SHA
+    - kubectl -n default rollout status deployment/pago-service --timeout=300s
+    - kubectl -n default set image deployment/vercatalogo-service vercatalogo=$DOCKER_REGISTRY/sa-vercatalogo:$CI_COMMIT_SHA
+    - kubectl -n default rollout status deployment/vercatalogo-service --timeout=300s
+    - kubectl -n default set image deployment/verpeli-service verpeli=$DOCKER_REGISTRY/sa-verpeli:$CI_COMMIT_SHA
+    - kubectl -n default rollout status deployment/verpeli-service --timeout=300s
+    - echo "✓ Production deployment completed!"

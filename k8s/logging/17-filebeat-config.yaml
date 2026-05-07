@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: logging
+  labels:
+    app: filebeat
+    component: logging
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+      - type: container
+        paths:
+          - /var/log/containers/*_default_*.log
+        processors:
+          - add_kubernetes_metadata:
+              host: ${NODE_NAME}
+              matchers:
+                - logs_path:
+                    logs_path: "/var/log/containers/"
+          - drop_event:
+              when:
+                not:
+                  or:
+                    - contains:
+                        kubernetes.pod.name: "auth-service"
+                    - contains:
+                        kubernetes.pod.name: "inventario-service"
+                    - contains:
+                        kubernetes.pod.name: "usuarios-service"
+                    - contains:
+                        kubernetes.pod.name: "pago-service"
+                    - contains:
+                        kubernetes.pod.name: "vercatalogo-service"
+                    - contains:
+                        kubernetes.pod.name: "verpeli-service"
+          - decode_json_fields:
+              fields: ["message"]
+              target: "json"
+              overwrite_keys: true
+              add_error_key: true
+    
+    processors:
+      - add_host_metadata:
+          when.not.contains.tags: forwarded
+      - add_cloud_metadata: ~
+      - add_docker_metadata: ~
+      - add_kubernetes_metadata:
+          host: ${NODE_NAME}
+          default_indexers.enabled: true
+          default_matchers.enabled: true
+      - add_fields:
+          target: ''
+          fields:
+            cluster: chapinflix-gke
+            environment: production
+            project: chapinflix
+    
+    output.logstash:
+      hosts: ['logstash.logging.svc.cluster.local:5044']
+      worker: 2
+      compression_level: 3
+      bulk_max_size: 2048
+    
+    logging.level: info
+    logging.to_files: false
+    logging.to_syslog: false
+    
+    http.enabled: true
+    http.host: 0.0.0.0
+    http.port: 5066

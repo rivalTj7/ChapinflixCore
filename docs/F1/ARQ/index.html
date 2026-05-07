@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitectura Chapinflix - Microservicios</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .diagram-container {
+            width: 100%;
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        
+        svg {
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .legend {
+            margin-top: 30hulk;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px;
+        }
+        
+        .legend-box {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        
+        .tech-stack {
+            margin-top: 30px;
+            padding: 20px;
+            background: #edf2f7;
+            border-radius: 10px;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .tech-category {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tech-category h3 {
+            margin-top: 0;
+            color: #4a5568;
+            font-size: 1.1em;
+        }
+        
+        .tech-category ul {
+            margin: 10px 0;
+            padding-left: 20px;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Chapinflix - Arquitectura de Microservicios</h1>
+        <div class="subtitle">Sistema de Streaming con Kubernetes y Docker</div>
+        
+        <div class="diagram-container">
+            <svg width="1200" height="800" viewBox="0 0 1200 800">
+                <!-- Definir gradientes y sombras -->
+                <defs>
+                    <linearGradient id="clientGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4299e1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#3182ce;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="ingressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="serviceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ed8936;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#dd6b20;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <linearGradient id="dbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#805ad5;stop-opacity:1" />
+                    </linearGradient>
+                    
+                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                        <feOffset dx="2" dy="2" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.2"/>
+                        </feComponentTransfer>
+                        <feMerge> 
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/> 
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Cliente/Frontend -->
+                <g transform="translate(50, 50)">
+                    <rect x="0" y="0" width="200" height="80" rx="10" fill="url(#clientGradient)" filter="url(#shadow)"/>
+                    <text x="100" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Frontend</text>
+                    <text x="100" y="50" text-anchor="middle" fill="white" font-size="14">(Angular)</text>
+                    <text x="100" y="65" text-anchor="middle" fill="white" font-size="12">Puerto: 4200</text>
+                </g>
+                
+                <!-- Flecha Frontend -> Ingress -->
+                <line x1="250" y1="90" x2="350" y2="90" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Kubernetes Cluster -->
+                <g transform="translate(350, 20)">
+                    <!-- Cluster border -->
+                    <rect x="0" y="0" width="800" height="460" rx="15" fill="none" stroke="#cbd5e0" stroke-width="2" stroke-dasharray="10,5"/>
+                    <text x="400" y="-5" text-anchor="middle" fill="#4a5568" font-size="18" font-weight="bold">Kubernetes Cluster (kind)</text>
+                    
+                    <!-- NGINX Ingress Controller -->
+                    <g transform="translate(50, 50)">
+                        <rect x="0" y="0" width="700" height="100" rx="10" fill="url(#ingressGradient)" filter="url(#shadow)"/>
+                        <text x="350" y="40" text-anchor="middle" fill="white" font-size="18" font-weight="bold">NGINX Ingress Controller</text>
+                        <text x="350" y="65" text-anchor="middle" fill="white" font-size="14">API Gateway - Puerto: 8080</text>
+                        <text x="350" y="85" text-anchor="middle" fill="white" font-size="12">Routing: /auth/, /inventario/, /usuarios/, /vercatalogo/, /verpeli/*</text>
+                    </g>
+                    
+                    <!-- Microservicios -->
+                    <g transform="translate(30, 200)">
+                        <!-- Auth Service -->
+                        <g transform="translate(0, 0)">
+                            <rect x="0" y="0" width="140" height="100" rx="8" fill="url(#serviceGradient)" filter="url(#shadow)"/>
+                            <text x="70" y="30" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Auth Service</text>
+                            <text x="70" y="50" text-anchor="middle" fill="white" font-size="11">FastAPI</text>
+                            <text x="70" y="65" text-anchor="middle" fill="white" font-size="10">Pod: sa-auth</text>
+                            <text x="70" y="80" text-anchor="middle" fill="white" font-size="10">Puerto: 8000</text>
+                        </g>
+                        
+                        <!-- Inventory Service -->
+                        <g transform="translate(150, 0)">
+                            <rect x="0" y="0" width="140" height="100" rx="8" fill="url(#serviceGradient)" filter="url(#shadow)"/>
+                            <text x="70" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Inventory</text>
+                            <text x="70" y="40" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Service</text>
+                            <text x="70" y="55" text-anchor="middle" fill="white" font-size="11">FastAPI</text>
+                            <text x="70" y="70" text-anchor="middle" fill="white" font-size="10">Pod: sa-inventario</text>
+                            <text x="70" y="85" text-anchor="middle" fill="white" font-size="10">Puerto: 8001</text>
+                        </g>
+                        
+                        <!-- Users Service -->
+                        <g transform="translate(300, 0)">
+                            <rect x="0" y="0" width="140" height="100" rx="8" fill="url(#serviceGradient)" filter="url(#shadow)"/>
+                            <text x="70" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Users</text>
+                            <text x="70" y="40" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Service</text>
+                            <text x="70" y="55" text-anchor="middle" fill="white" font-size="11">FastAPI</text>
+                            <text x="70" y="70" text-anchor="middle" fill="white" font-size="10">Pod: sa-usuarios</text>
+                            <text x="70" y="85" text-anchor="middle" fill="white" font-size="10">Puerto: 8002</text>
+                        </g>
+                        
+                        <!-- Catalog Service -->
+                        <g transform="translate(450, 0)">
+                            <rect x="0" y="0" width="140" height="100" rx="8" fill="url(#serviceGradient)" filter="url(#shadow)"/>
+                            <text x="70" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Catalog</text>
+                            <text x="70" y="40" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Service</text>
+                            <text x="70" y="55" text-anchor="middle" fill="white" font-size="11">FastAPI</text>
+                            <text x="70" y="70" text-anchor="middle" fill="white" font-size="10">Pod: sa-vercatalogo</text>
+                            <text x="70" y="85" text-anchor="middle" fill="white" font-size="10">Puerto: 8003</text>
+                        </g>
+                        
+                        <!-- Movie Service -->
+                        <g transform="translate(600, 0)">
+                            <rect x="0" y="0" width="140" height="100" rx="8" fill="url(#serviceGradient)" filter="url(#shadow)"/>
+                            <text x="70" y="25" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Movie</text>
+                            <text x="70" y="40" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Service</text>
+                            <text x="70" y="55" text-anchor="middle" fill="white" font-size="11">FastAPI</text>
+                            <text x="70" y="70" text-anchor="middle" fill="white" font-size="10">Pod: sa-verpeli</text>
+                            <text x="70" y="85" text-anchor="middle" fill="white" font-size="10">Puerto: 8004</text>
+                        </g>
+                    </g>
+                    
+                    <!-- Conexiones Ingress -> Services -->
+                    <g stroke="#718096" stroke-width="1.5" fill="none">
+                        <path d="M 100 150 L 100 200" marker-end="url(#arrowhead)"/>
+                        <path d="M 250 150 L 250 200" marker-end="url(#arrowhead)"/>
+                        <path d="M 400 150 L 400 200" marker-end="url(#arrowhead)"/>
+                        <path d="M 550 150 L 550 200" marker-end="url(#arrowhead)"/>
+                        <path d="M 700 150 L 700 200" marker-end="url(#arrowhead)"/>
+                    </g>
+                    
+                    <!-- Docker Images -->
+                    <g transform="translate(50, 350)">
+                        <rect x="0" y="0" width="700" height="80" rx="10" fill="#e2e8f0" stroke="#cbd5e0" stroke-width="1"/>
+                        <text x="350" y="25" text-anchor="middle" fill="#2d3748" font-size="14" font-weight="bold">Docker Images (Local Registry)</text>
+                        <text x="350" y="50" text-anchor="middle" fill="#4a5568" font-size="12">sa-auth:local | sa-inventario:local | sa-usuarios:local</text>
+                        <text x="350" y="65" text-anchor="middle" fill="#4a5568" font-size="12">sa-vercatalogo:local | sa-verpeli:local</text>
+                    </g>
+                </g>
+                
+                <!-- PostgreSQL Database (FUERA del cluster) -->
+                <g transform="translate(400, 550)">
+                    <rect x="0" y="0" width="500" height="180" rx="15" fill="none" stroke="#805ad5" stroke-width="2" stroke-dasharray="8,4"/>
+                    <text x="250" y="25" text-anchor="middle" fill="#805ad5" font-size="16" font-weight="bold">Docker Container (Fuera del Cluster)</text>
+                    
+                    <g transform="translate(50, 35)">
+                        <rect x="0" y="0" width="400" height="125" rx="10" fill="url(#dbGradient)" filter="url(#shadow)"/>
+                        <text x="200" y="25" text-anchor="middle" fill="white" font-size="18" font-weight="bold">PostgreSQL - Base de Datos Única</text>
+                        <text x="200" y="45" text-anchor="middle" fill="white" font-size="13">Database: general | Puerto: 5432</text>
+                        
+                        <!-- Schema public -->
+                        <rect x="20" y="55" width="170" height="55" rx="5" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="1"/>
+                        <text x="105" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Schema: public</text>
+                        <text x="105" y="90" text-anchor="middle" fill="white" font-size="10">• users (usuarios)</text>
+                        <text x="105" y="103" text-anchor="middle" fill="white" font-size="10">• refresh_tokens, email_tokens</text>
+                        
+                        <!-- Schema content -->
+                        <rect x="210" y="55" width="170" height="55" rx="5" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="1"/>
+                        <text x="295" y="75" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Schema: content</text>
+                        <text x="295" y="90" text-anchor="middle" fill="white" font-size="10">• movie, category, studio</text>
+                        <text x="295" y="103" text-anchor="middle" fill="white" font-size="10">• favorite, watchlist, view_history</text>
+                    </g>
+                </g>
+                
+                <!-- Conexiones Services -> DB (ahora salen del cluster) -->
+                <g stroke="#9f7aea" stroke-width="2" fill="none" stroke-dasharray="5,3">
+                    <!-- Auth -> Schema public -->
+                    <path d="M 450 500 L 500 625" marker-end="url(#arrowhead)"/>
+                    <!-- Inventory -> Schema content -->
+                    <path d="M 550 500 L 600 625" marker-end="url(#arrowhead)"/>
+                    <!-- Users -> Schema public -->
+                    <path d="M 650 500 L 500 625" marker-end="url(#arrowhead)"/>
+                    <!-- Catalog -> Schema content -->
+                    <path d="M 750 500 L 700 625" marker-end="url(#arrowhead)"/>
+                    <!-- Movie -> Schema content -->
+                    <path d="M 850 500 L 700 625" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Etiquetas de conexión -->
+                    <text x="470" y="560" text-anchor="middle" fill="#805ad5" font-size="10">public</text>
+                    <text x="580" y="560" text-anchor="middle" fill="#805ad5" font-size="10">content</text>
+                    <text x="570" y="540" text-anchor="middle" fill="#805ad5" font-size="10">public</text>
+                    <text x="730" y="560" text-anchor="middle" fill="#805ad5" font-size="10">content</text>
+                    <text x="780" y="540" text-anchor="middle" fill="#805ad5" font-size="10">content</text>
+                    
+                    <text x="650" y="520" text-anchor="middle" fill="#805ad5" font-size="11" font-weight="bold">host.docker.internal:5432</text>
+                </g>
+                
+                <!-- Arrow marker -->
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#718096"/>
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #4299e1, #3182ce);"></div>
+                <span>Cliente/Frontend</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #48bb78, #38a169);"></div>
+                <span>API Gateway (Ingress)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #ed8936, #dd6b20);"></div>
+                <span>Microservicios</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: linear-gradient(135deg, #9f7aea, #805ad5);"></div>
+                <span>Base de Datos</span>
+            </div>
+        </div>
+        
+        <div class="tech-stack">
+            <h2 style="color: #2d3748; margin-top: 0;">Stack Tecnológico</h2>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>🎨 Frontend</h3>
+                    <ul>
+                        <li>Angular (SPA)</li>
+                        <li>TypeScript</li>
+                        <li>Material Design</li>
+                        <li>Puerto: 4200</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>⚙ Backend</h3>
+                    <ul>
+                        <li>FastAPI (Python)</li>
+                        <li>JWT Authentication</li>
+                        <li>RESTful APIs</li>
+                        <li>Microservicios</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>🐳 Contenedores</h3>
+                    <ul>
+                        <li>Docker</li>
+                        <li>Docker Compose</li>
+                        <li>Multi-stage builds</li>
+                        <li>Alpine Linux base</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>☸ Orquestación</h3>
+                    <ul>
+                        <li>Kubernetes (kind)</li>
+                        <li>NGINX Ingress</li>
+                        <li>Services & Pods</li>
+                        <li>ConfigMaps</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>💾 Base de Datos</h3>
+                    <ul>
+                        <li>PostgreSQL 14+</li>
+                        <li>Stored Procedures</li>
+                        <li>Multi-schema</li>
+                        <li>Triggers</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>🔧 DevOps</h3>
+                    <ul>
+                        <li>Git/GitHub</li>
+                        <li>CI/CD Pipeline</li>
+                        <li>Environment Variables</li>
+                        <li>Health Checks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 10px;">
+            <h3 style="color: #2d3748;">Flujo de Comunicación</h3>
+            <ol style="color: #4a5568; line-height: 1.8;">
+                <li><strong>Cliente → Ingress:</strong> Las peticiones del frontend Angular llegan al NGINX Ingress Controller en el puerto 8080</li>
+                <li><strong>Ingress → Microservicios:</strong> El Ingress enruta las peticiones según el path prefix a cada microservicio</li>
+                <li><strong>Microservicios → PostgreSQL:</strong> Los servicios salen del cluster y se conectan a una única base de datos PostgreSQL via host.docker.internal:5432</li>
+                <li><strong>Separación Lógica por Schemas:</strong>
+                    <ul style="margin: 5px 0;">
+                        <li><strong>Schema 'public':</strong> Tablas de autenticación y usuarios (users, refresh_tokens, email_verification_tokens)</li>
+                        <li><strong>Schema 'content':</strong> Tablas de contenido multimedia (movie, category, studio, favorite, watchlist, view_history)</li>
+                    </ul>
+                </li>
+                <li><strong>Respuesta:</strong> Los datos fluyen de vuelta siguiendo el camino inverso</li>
+            </ol>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #fef5e7; border-left: 4px solid #f39c12; border-radius: 5px;">
+            <h4 style="color: #e67e22; margin-top: 0;">📝 Notas de Implementación</h4>
+            <ul style="color: #856404; margin: 5px 0;">
+                <li>Cluster local con <code>kind</code> para desarrollo</li>
+                <li>PostgreSQL ejecutándose como contenedor Docker independiente fuera del cluster</li>
+                <li>Conexión a BD desde los pods usando <code>host.docker.internal:5432</code></li>
+                <li>Imágenes Docker cargadas localmente con <code>kind load docker-image</code></li>
+                <li>Variables de entorno configuradas en los manifiestos de Kubernetes</li>
+                <li>Base de datos compartida con aislamiento por schemas</li>
+                <li>Autenticación JWT centralizada en el servicio Auth</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

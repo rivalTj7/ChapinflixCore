@@ -1,0 +1,60 @@
+sequenceDiagram
+    participant U as Usuario<br/>(Autenticado)
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant VC as Ver Catálogo Service<br/>(Puerto 8003)
+    participant DB as PostgreSQL<br/>(content schema)
+
+    Note over U,DB: CDU 202: Explorar Catálogo Personal (Include: CDU 201)
+    
+    U->>F: Usuario autenticado accede a catálogo
+    F->>F: Validar JWT token
+    Note right of F: auth_optional → AuthContext con user_id
+    
+    Note over F,DB: Include CDU 201: Cargar carruseles generales primero
+    F->>F: Ejecutar CDU 201 completo
+    Note right of F: Cargar película destacada,<br/>más populares, top 15,<br/>recientemente agregados
+    
+    par Cargar historial personal
+        F->>AG: GET /vercatalogo/catalog/recently-watched?limit=20
+        AG->>VC: Enruta a vercatalogo-service:8000→8003
+        
+        VC->>VC: Extraer user_id del JWT
+        Note right of VC: _get_user_id(auth) → user_id válido
+        
+        alt Usuario no autenticado
+            VC-->>AG: CarouselResponse vacío (items=[], total=0)
+            AG-->>F: Sin historial
+        else Usuario autenticado
+            VC->>DB: Consultar películas vistas recientemente
+            Note right of DB: SELECT * FROM content.fn_catalog_recently_watched($1, $2)<br/>Parámetros: user_id, limit=20
+            Note right of DB: JOIN view_history ON user_id<br/>UUID conversion: fn_user_int_to_uuid(user_id)<br/>ORDER BY MAX(viewed_at) DESC
+            
+            DB-->>VC: Películas vistas recientemente
+            VC-->>AG: CarouselResponse con historial
+            AG-->>F: Carrusel "Vistos recientemente"
+        end
+    and Cargar "Ver otra vez"
+        F->>AG: GET /vercatalogo/catalog/watch-again?limit=20
+        AG->>VC: Enruta a vercatalogo-service:8000→8003
+        
+        VC->>VC: Validar user_id
+        alt Usuario no autenticado
+            VC-->>AG: CarouselResponse vacío
+            AG-->>F: Sin recomendaciones
+        else Usuario autenticado
+            VC->>DB: Consultar películas para ver otra vez
+            Note right of DB: SELECT * FROM content.fn_catalog_watch_again($1, $2)<br/>JOIN view_history GROUP BY movie_id<br/>HAVING COUNT(vh.id) > 1<br/>ORDER BY COUNT(vh.id) DESC
+            
+            DB-->>VC: Películas vistas múltiples veces
+            VC-->>AG: CarouselResponse "Ver otra vez"
+            AG-->>F: Carrusel personalizado
+        end
+    end
+    
+    F->>F: Renderizar catálogo completo
+    Note right of F: Combinar carruseles generales (CDU 201)<br/>+ carruseles personales (CDU 202)
+    
+    F-->>U: Catálogo personalizado:<br/>• Película destacada<br/>• Carruseles generales<br/>• Vistos recientemente<br/>• Ver otra vez<br/>• Basado en historial personal
+
+    Note over U,DB: Requiere autenticación para mostrar historial<br/>Si no autenticado, solo muestra carruseles generales

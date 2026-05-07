@@ -1,0 +1,39 @@
+erDiagram
+    APP_USERS {
+        bigserial id PK
+        varchar email UK
+        varchar username UK
+        text password_hash
+        varchar first_name
+        varchar last_name
+        boolean is_active
+        boolean is_verified
+        boolean two_fa_enabled
+        text two_fa_secret
+        integer failed_login_attempts
+        timestamptz locked_until
+        boolean is_paid
+        boolean is_admin
+        boolean is_content_handler
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    EMAIL_VERIFICATION_TOKENS {
+        bigserial id PK
+        bigint user_id FK
+        varchar token UK
+        timestamptz expires_at
+        timestamptz created_at
+    }
+
+    REFRESH_TOKENS {
+        bigserial id PK
+        bigint user_id FK
+        text token UK
+        timestamptz expires_at
+        timestamptz created_at
+    }
+
+    APP_USERS ||--o{ EMAIL_VERIFICATION_TOKENS : has
+    APP_USERS ||--o{ REFRESH_TOKENS : has

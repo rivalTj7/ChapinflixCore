@@ -1,0 +1,104 @@
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant AS as Auth Service<br/>(Puerto 8000)
+    participant DB as PostgreSQL<br/>(public schema)
+
+    Note over U,DB: CDU 103: Iniciar Sesión
+    
+    U->>F: Ingresa credenciales<br/>(username, password)
+    F->>AG: POST /auth/api/auth/login
+    AG->>AS: Enruta a auth-service:8000
+    
+    AS->>DB: Buscar usuario por username
+    Note right of DB: SELECT * FROM users<br/>WHERE username = ?
+    DB-->>AS: Datos del usuario
+    
+    alt Usuario no encontrado
+        AS-->>AG: HTTP 401 - Credenciales inválidas
+        AG-->>F: Error autenticación
+        F-->>U: Credenciales incorrectas
+    else Usuario encontrado
+        alt Cuenta bloqueada
+            Note right of AS: locked_until > now()
+            AS-->>AG: HTTP 423 - Cuenta bloqueada
+            AG-->>F: Cuenta bloqueada
+            F-->>U: Cuenta bloqueada hasta [fecha]
+        else Cuenta no bloqueada
+            AS->>AS: Verificar contraseña
+            Note right of AS: verify_password(input, hash)
+            
+            alt Contraseña incorrecta
+                AS->>AS: failed_login_attempts++
+                AS->>DB: Actualizar intentos fallidos
+                Note right of DB: UPDATE users SET<br/>failed_login_attempts = failed_login_attempts + 1
+                
+                alt Máximo intentos alcanzado
+                    AS->>DB: Bloquear cuenta
+                    Note right of DB: UPDATE users SET<br/>locked_until = now() + interval 'X minutes',<br/>failed_login_attempts = 0
+                    DB-->>AS: Cuenta bloqueada
+                    AS-->>AG: HTTP 401 - Credenciales inválidas
+                    AG-->>F: Error autenticación
+                    F-->>U: Cuenta bloqueada por intentos
+                else Intentos no superados
+                    DB-->>AS: Intentos actualizados
+                    AS-->>AG: HTTP 401 - Credenciales inválidas
+                    AG-->>F: Error autenticación
+                    F-->>U: Credenciales incorrectas
+                end
+            else Contraseña correcta
+                alt Email no verificado
+                    AS-->>AG: HTTP 401 - Email no verificado
+                    AG-->>F: Error verificación
+                    F-->>U: Debe verificar email primero
+                else Email verificado
+                    alt 2FA habilitado - Extend: CDU 104
+                        Note over U,DB: Verificación 2FA requerida
+                        alt Código 2FA no proporcionado
+                            AS-->>AG: HTTP 401 - Código 2FA requerido
+                            AG-->>F: Requiere 2FA
+                            F->>U: Solicitar código 2FA
+                            U->>F: Ingresa código TOTP
+                            F->>AG: POST /auth/api/auth/login<br/>(con totp_code)
+                            AG->>AS: Enruta con código 2FA
+                        end
+                        
+                        AS->>AS: Desencriptar secret 2FA
+                        AS->>AS: Verificar código TOTP
+                        Note right of AS: verify_totp(secret, code)
+                        
+                        alt Código 2FA inválido
+                            AS-->>AG: HTTP 401 - Código 2FA inválido
+                            AG-->>F: Error 2FA
+                            F-->>U: Código 2FA incorrecto
+                        else Código 2FA válido
+                            Note over AS: Continuar con login exitoso
+                        end
+                    else 2FA no habilitado
+                        Note over AS: Continuar con login exitoso
+                    end
+                    
+                    alt Login exitoso
+                        AS->>DB: Resetear intentos fallidos
+                        Note right of DB: UPDATE users SET<br/>failed_login_attempts = 0,<br/>locked_until = NULL
+                        
+                        AS->>AS: Crear tokens JWT
+                        Note right of AS: Claims: user_id, paid, admin, content_handler
+                        AS->>AS: access_token = create_access_token()
+                        AS->>AS: refresh_token = create_refresh_token()
+                        
+                        AS->>DB: Guardar refresh token
+                        Note right of DB: INSERT INTO refresh_tokens<br/>(user_id, token, expires_at)
+                        DB-->>AS: Token guardado
+                        
+                        AS->>F: Set cookies + response
+                        Note right of AS: Set-Cookie: access_token, refresh_token
+                        AS-->>AG: HTTP 200 + tokens
+                        AG-->>F: Login exitoso + cookies
+                        F-->>U: Redirigir a dashboard
+                    end
+                end
+            end
+        end
+    end

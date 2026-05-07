@@ -1,0 +1,365 @@
+# Auth Service (usa PostgreSQL)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth
+        image: gcr.io/sa-proyecto-475802/sa-auth:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: DATABASE_URL
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_SECRET_KEY
+        - name: AUTH_ALGORITHM
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_ALGORITHM
+        - name: PORT
+          value: "8000"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: default
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+# Inventario Service (usa MongoDB + Azure, NO PostgreSQL)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventario-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventario-service
+  template:
+    metadata:
+      labels:
+        app: inventario-service
+    spec:
+      containers:
+      - name: inventario
+        image: gcr.io/sa-proyecto-475802/sa-inventario:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: MONGO_URI
+        - name: MONGO_DB
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: MONGO_DB
+        - name: CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AZURE_CONNECTION_STRING
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_SECRET_KEY
+        - name: PORT
+          value: "8001"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventario-service
+  namespace: default
+spec:
+  selector:
+    app: inventario-service
+  ports:
+  - port: 8001
+    targetPort: 8001
+  type: ClusterIP
+---
+# Usuarios Service (usa PostgreSQL)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usuarios-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: usuarios-service
+  template:
+    metadata:
+      labels:
+        app: usuarios-service
+    spec:
+      containers:
+      - name: usuarios
+        image: gcr.io/sa-proyecto-475802/sa-usuarios:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8002
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: DATABASE_URL
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_SECRET_KEY
+        - name: PORT
+          value: "8002"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: usuarios-service
+  namespace: default
+spec:
+  selector:
+    app: usuarios-service
+  ports:
+  - port: 8002
+    targetPort: 8002
+  type: ClusterIP
+---
+# Pago Service (usa PostgreSQL)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pago-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pago-service
+  template:
+    metadata:
+      labels:
+        app: pago-service
+    spec:
+      containers:
+      - name: pago
+        image: gcr.io/sa-proyecto-475802/sa-pago:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8005
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: DATABASE_URL
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_SECRET_KEY
+        - name: PORT
+          value: "8005"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pago-service
+  namespace: default
+spec:
+  selector:
+    app: pago-service
+  ports:
+  - port: 8005
+    targetPort: 8005
+  type: ClusterIP
+---
+# Ver Catalogo Service (usa MongoDB, NO Azure)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vercatalogo-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vercatalogo-service
+  template:
+    metadata:
+      labels:
+        app: vercatalogo-service
+    spec:
+      containers:
+      - name: vercatalogo
+        image: gcr.io/sa-proyecto-475802/sa-vercatalogo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8010
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: MONGO_URI
+        - name: MONGO_DB
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: MONGO_DB
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_SECRET_KEY
+        - name: PORT
+          value: "8010"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vercatalogo-service
+  namespace: default
+spec:
+  selector:
+    app: vercatalogo-service
+  ports:
+  - port: 8010
+    targetPort: 8010
+  type: ClusterIP
+---
+# Ver Peli Service (usa MongoDB + Azure)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: verpeli-service
+  namespace: default
+spec:
+  replicas: 1  #
+  selector:
+    matchLabels:
+      app: verpeli-service
+  template:
+    metadata:
+      labels:
+        app: verpeli-service
+    spec:
+      containers:
+      - name: verpeli
+        image: gcr.io/sa-proyecto-475802/sa-verpeli:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8020
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: MONGO_URI
+        - name: MONGO_DB
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: MONGO_DB
+        - name: CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AZURE_CONNECTION_STRING
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chapinflix-secrets
+              key: AUTH_SECRET_KEY
+        - name: PORT
+          value: "8020"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: verpeli-service
+  namespace: default
+spec:
+  selector:
+    app: verpeli-service
+  ports:
+  - port: 8020
+    targetPort: 8020
+  type: ClusterIP

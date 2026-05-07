@@ -1,0 +1,482 @@
+/* app/globals.css - Sistema de colores corregido */
+@import "tailwindcss";
+
+:root {
+  /* Chapinflix Brand Colors - Mejorados para mejor contraste */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;  /* Más oscuro para mejor contraste */
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  --color-secondary-50: #faf5ff;
+  --color-secondary-100: #f3e8ff;
+  --color-secondary-200: #e9d5ff;
+  --color-secondary-300: #d8b4fe;
+  --color-secondary-400: #c084fc;
+  --color-secondary-500: #a855f7;
+  --color-secondary-600: #9333ea;
+  --color-secondary-700: #7c3aed;
+  --color-secondary-800: #6b21a8;
+  --color-secondary-900: #581c87;
+
+  /* Grays - CORREGIDOS para mejor legibilidad */
+  --color-gray-50: #fafafa;      /* Gris muy claro para fondos */
+  --color-gray-100: #f5f5f5;     /* Gris claro para fondos */
+  --color-gray-200: #e5e5e5;     /* Gris para bordes */
+  --color-gray-300: #d4d4d4;     /* Gris medio-claro */
+  --color-gray-400: #a3a3a3;     /* Gris medio */
+  --color-gray-500: #737373;     /* Gris medio-oscuro */
+  --color-gray-600: #525252;     /* Gris oscuro */
+  --color-gray-700: #404040;     /* Gris muy oscuro */
+  --color-gray-800: #262626;     /* Casi negro */
+  --color-gray-900: #171717;     /* Negro */
+
+  /* Semantic Colors - Más vibrantes */
+  --color-success: #10b981;
+  --color-success-light: #34d399;
+  --color-success-dark: #059669;
+  --color-success-bg: rgba(16, 185, 129, 0.1);
+  --color-success-border: rgba(16, 185, 129, 0.3);
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fbbf24;
+  --color-warning-dark: #d97706;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-border: rgba(245, 158, 11, 0.3);
+
+  --color-error: #ef4444;
+  --color-error-light: #f87171;
+  --color-error-dark: #dc2626;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-border: rgba(239, 68, 68, 0.3);
+
+  --color-info: #3b82f6;
+  --color-info-light: #60a5fa;
+  --color-info-dark: #1d4ed8;
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+  --color-info-border: rgba(59, 130, 246, 0.3);
+
+  /* Typography - Mejorado */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Shadows - Más definidas */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 30px -10px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-slow: 400ms ease-out;
+}
+
+/* Dark theme - Para aplicación oscura como Netflix */
+[data-theme="dark"], .dark {
+  --color-gray-50: #000000;      /* Negro puro para fondos principales */
+  --color-gray-100: #0f0f0f;     /* Casi negro para cards */
+  --color-gray-200: #1a1a1a;     /* Gris muy oscuro para bordes */
+  --color-gray-300: #262626;     /* Gris oscuro */
+  --color-gray-400: #404040;     /* Gris medio-oscuro */
+  --color-gray-500: #5a5a5a;     /* Gris medio */
+  --color-gray-600: #737373;     /* Gris medio-claro */
+  --color-gray-700: #a3a3a3;     /* Gris claro para texto secundario */
+  --color-gray-800: #d4d4d4;     /* Gris muy claro para texto principal */
+  --color-gray-900: #ffffff;     /* Blanco puro para texto importante */
+}
+
+/* Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* CORREGIDO: Aplicar tema oscuro por defecto para streaming app */
+body {
+  margin: 0;
+  font-family: var(--font-family-primary);
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-900);
+  min-height: 100vh;
+}
+
+/* Aplicar tema oscuro automáticamente */
+body.dark,
+body[data-theme="dark"] {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Para aplicaciones de streaming, usar tema oscuro por defecto */
+body {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Improved Focus Styles */
+*:focus {
+  outline: 2px solid var(--color-primary-600);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-primary-600);
+  color: white;
+}
+
+/* Scrollbar - Mejorado para tema oscuro */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #1a1a1a;
+}
+
+/* Improved Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+}
+
+/* Utility Classes */
+.animate-fadeIn { animation: fadeIn var(--transition-normal); }
+.animate-fadeInUp { animation: fadeInUp var(--transition-normal); }
+.animate-slideInRight { animation: slideInRight var(--transition-normal); }
+.animate-scaleIn { animation: scaleIn var(--transition-normal); }
+.animate-pulse { animation: pulse 2s infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-glow { animation: glow 2s ease-in-out infinite; }
+
+/* Glass effect mejorado para tema oscuro */
+.glass {
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-light {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient text mejorado */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+}
+
+/* Button styles mejorados para tema oscuro */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  user-select: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-secondary-700));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #404040;
+}
+
+.btn-secondary:hover {
+  background: #262626;
+  border-color: #5a5a5a;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #a3a3a3;
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Card mejorado para tema oscuro */
+.card {
+  background: #0f0f0f;
+  border: 1px solid #262626;
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+  color: #ffffff;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: #404040;
+}
+
+/* Input mejorado para tema oscuro */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border: 1px solid #404040;
+  border-radius: var(--radius-lg);
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary-600);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #0f0f0f;
+}
+
+.input::placeholder {
+  color: #737373;
+}
+
+/* Loading states mejorados para tema oscuro */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 25%,
+    #262626 50%,
+    #1a1a1a 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Status indicators */
+.status-online {
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+}
+
+.status-offline {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+}
+
+.status-warning {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+}
+
+/* Mejoras específicas para cards de películas */
+.movie-card {
+  background: #0f0f0f;
+  border: 1px solid #262626;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  color: #ffffff;
+}
+
+.movie-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  border-color: #404040;
+}
+
+.movie-card .movie-info {
+  padding: 1rem;
+  background: #0f0f0f;
+}
+
+.movie-card .movie-title {
+  color: #ffffff;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.movie-card .movie-meta {
+  color: #a3a3a3;
+  font-size: 0.875rem;
+}
+
+.movie-card .movie-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.movie-badge.premium {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.movie-badge.gratis {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .card {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --color-gray-200: #000000;
+    --color-gray-300: #333333;
+    --color-gray-700: #cccccc;
+    --color-gray-800: #ffffff;
+    --color-primary-600: #4f94ff;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

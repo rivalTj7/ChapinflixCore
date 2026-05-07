@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendations-service
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: recommendations-service
+  template:
+    metadata:
+      labels:
+        app: recommendations-service
+    spec:
+      containers:
+      - name: recommendations
+        image: gcr.io/sa-proyecto-475802/sa-recomendaciones:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 50051
+          name: grpc
+        - containerPort: 8040
+          name: http
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: recommendations-secrets
+              key: MONGO_URI
+        - name: MONGO_DB
+          valueFrom:
+            secretKeyRef:
+              name: recommendations-secrets
+              key: MONGO_DB
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: recommendations-secrets
+              key: OPENAI_API_KEY
+        - name: AUTH_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: recommendations-secrets
+              key: AUTH_SECRET_KEY
+        - name: AUTH_ALGORITHM
+          value: "HS256"
+        - name: GRPC_PORT
+          value: "50051"
+        - name: HTTP_PORT
+          value: "8040"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendations-service
+  namespace: default
+spec:
+  selector:
+    app: recommendations-service
+  ports:
+  - port: 50051
+    targetPort: 50051
+    name: grpc
+  - port: 8040
+    targetPort: 8040
+    name: http
+  type: ClusterIP

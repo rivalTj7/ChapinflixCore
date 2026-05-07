@@ -1,0 +1,833 @@
+{
+	"info": {
+		"_postman_id": "0f4fbe63-23e9-464c-9d58-3d3299e110a1",
+		"name": "Chapinflix - Ver Catálogo",
+		"description": "Microservicio para visualización del catálogo de películas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24173117"
+	},
+	"item": [
+		{
+			"name": "catalog",
+			"item": [
+				{
+					"name": "Get Most Popular",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/most-popular?limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"most-popular"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Obtiene las películas más populares"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/most-popular?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"most-popular"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    },\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/most-popular?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"most-popular"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Top 15",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/top-15",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"top-15"
+							]
+						},
+						"description": "Obtiene el Top 15 de películas"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/top-15",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"top-15"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    },\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Recently Added",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/recently-added?limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"recently-added"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Obtiene las películas recientemente agregadas"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/recently-added?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"recently-added"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    },\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/recently-added?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"recently-added"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Recently Watched",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/recently-watched?limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"recently-watched"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Obtiene las películas vistas recientemente por el usuario"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/recently-watched?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"recently-watched"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    },\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/recently-watched?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"recently-watched"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Watch Again",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/watch-again?limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"watch-again"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Obtiene las películas para ver otra vez (vistas >1 vez)"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/watch-again?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"watch-again"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    },\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/watch-again?limit=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"watch-again"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"categories"
+							]
+						},
+						"description": "Obtiene todas las categorías disponibles"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/categories",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"categories"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"category_id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"parent_id\": \"<string>\"\n  },\n  {\n    \"category_id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"slug\": \"<string>\",\n    \"parent_id\": \"<string>\"\n  }\n]"
+						}
+					]
+				},
+				{
+					"name": "Get Movies By Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/category/:slug?limit=20&offset=0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"category",
+								":slug"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "<string>",
+									"description": "(Required) "
+								}
+							]
+						},
+						"description": "Obtiene películas de una categoría específica"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/category/:slug?limit=20&offset=0",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"category",
+										":slug"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										},
+										{
+											"key": "offset",
+											"value": "0"
+										}
+									],
+									"variable": [
+										{
+											"key": "slug",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    },\n    {\n      \"movie_id\": \"<string>\",\n      \"title\": \"<string>\",\n      \"slug\": \"<string>\",\n      \"synopsis_short\": \"<string>\",\n      \"poster_url\": \"<string>\",\n      \"classification_code\": \"<string>\",\n      \"duration_minutes\": \"<integer>\",\n      \"is_free\": \"<boolean>\",\n      \"view_count\": \"<integer>\",\n      \"upload_date\": \"<dateTime>\",\n      \"last_viewed\": \"<dateTime>\",\n      \"watch_count\": \"<integer>\"\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+						},
+						{
+							"name": "Validation Error",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/category/:slug?limit=20&offset=0",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"category",
+										":slug"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										},
+										{
+											"key": "offset",
+											"value": "0"
+										}
+									],
+									"variable": [
+										{
+											"key": "slug",
+											"value": "<string>",
+											"description": "(Required) "
+										}
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"loc\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"msg\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Featured Movie",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/catalog/featured",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"catalog",
+								"featured"
+							]
+						},
+						"description": "Obtiene la película destacada para el encabezado"
+					},
+					"response": [
+						{
+							"name": "Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/catalog/featured",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"catalog",
+										"featured"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"movie_id\": \"<string>\",\n  \"title\": \"<string>\",\n  \"slug\": \"<string>\",\n  \"synopsis_short\": \"<string>\",\n  \"synopsis_long\": \"<string>\",\n  \"banner_url\": \"<string>\",\n  \"poster_url\": \"<string>\",\n  \"classification_code\": \"<string>\",\n  \"duration_minutes\": \"<integer>\",\n  \"is_free\": \"<boolean>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/health",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/",
+			"type": "string"
+		}
+	]
+}

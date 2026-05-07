@@ -1,0 +1,116 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chapinflix-gateway
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+    # TIMEOUTS:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: chapinflix.app
+    http:
+      paths:
+      - path: /auth(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 8000
+      - path: /inventario(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: inventario-service
+            port:
+              number: 8001
+      - path: /usuarios(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: usuarios-service
+            port:
+              number: 8002
+      - path: /pago(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: pago-service
+            port:
+              number: 8005
+      - path: /vercatalogo(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: vercatalogo-service
+            port:
+              number: 8010
+      - path: /verpeli(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: verpeli-service
+            port:
+              number: 8020
+      - path: /stats(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: estadisticas-service
+            port:
+              number: 8030
+  - http:
+      paths:
+      - path: /auth(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 8000
+      - path: /inventario(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: inventario-service
+            port:
+              number: 8001
+      - path: /usuarios(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: usuarios-service
+            port:
+              number: 8002
+      - path: /pago(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: pago-service
+            port:
+              number: 8005
+      - path: /vercatalogo(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: vercatalogo-service
+            port:
+              number: 8010
+      - path: /verpeli(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: verpeli-service
+            port:
+              number: 8020

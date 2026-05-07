@@ -1,0 +1,64 @@
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant VC as Ver Catálogo Service<br/>(Puerto 8003)
+    participant DB as PostgreSQL<br/>(content schema)
+
+    Note over U,DB: CDU 201: Explorar Carruseles Principales (Include: CDU 204)
+    
+    U->>F: Accede a página principal
+    F->>F: Verificar autenticación opcional
+    Note right of F: auth_optional - extrae JWT si existe
+    
+    par Cargar película destacada (Include CDU 204)
+        F->>AG: GET /vercatalogo/catalog/featured
+        AG->>VC: Enruta a vercatalogo-service:8000→8003
+        
+        VC->>VC: Extraer user_id si autenticado
+        Note right of VC: _get_user_id(auth) → user_id or None
+        
+        VC->>DB: Consultar película destacada
+        Note right of DB: SELECT * FROM content.fn_catalog_featured($1)<br/>Parámetro: user_id (puede ser NULL)
+        Note right of DB: Filtros aplicados:<br/>- is_active = TRUE<br/>- banner_url IS NOT NULL<br/>- disponibilidad vigente<br/>- acceso según suscripción
+        
+        DB-->>VC: Película destacada o NULL
+        VC-->>AG: FeaturedMovie o NULL
+        AG-->>F: Datos película destacada
+    and Cargar más populares
+        F->>AG: GET /vercatalogo/catalog/most-popular?limit=20
+        AG->>VC: Enruta a vercatalogo-service:8000→8003
+        
+        VC->>DB: Consultar más populares
+        Note right of DB: SELECT * FROM content.fn_catalog_most_popular($1, $2)<br/>Parámetros: user_id, limit=20
+        Note right of DB: ORDER BY view_count DESC<br/>Filtros según suscripción usuario
+        
+        DB-->>VC: Lista películas populares
+        VC-->>AG: CarouselResponse (items + total)
+        AG-->>F: Carrusel más populares
+    and Cargar top 15
+        F->>AG: GET /vercatalogo/catalog/top-15
+        AG->>VC: Enruta a vercatalogo-service:8000→8003
+        
+        VC->>DB: Consultar top 15
+        Note right of DB: SELECT * FROM content.fn_catalog_top_15($1)<br/>Llama internamente a fn_catalog_most_popular con limit=15
+        
+        DB-->>VC: Top 15 películas
+        VC-->>AG: CarouselResponse (15 items)
+        AG-->>F: Carrusel top 15
+    and Cargar recientemente agregados
+        F->>AG: GET /vercatalogo/catalog/recently-added?limit=20
+        AG->>VC: Enruta a vercatalogo-service:8000→8003
+        
+        VC->>DB: Consultar recién agregados
+        Note right of DB: SELECT * FROM content.fn_catalog_recently_added($1, $2)<br/>ORDER BY upload_date DESC
+        
+        DB-->>VC: Películas recientes
+        VC-->>AG: CarouselResponse
+        AG-->>F: Carrusel recién agregados
+    end
+    
+    F->>F: Renderizar página con todos los carruseles
+    F-->>U: Página principal con:<br/>• Película destacada (hero)<br/>• Más populares<br/>• Top 15<br/>• Recientemente agregados
+
+    Note over U,DB: Flujo completo sin autenticación requerida<br/>Contenido filtrado según tipo usuario

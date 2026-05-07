@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant C as Content Handler
+    participant F as Frontend Admin
+    participant AG as API Gateway<br/>(Ingress)
+    participant IC as Inventario Service<br/>(Puerto 8001)
+    participant DB as PostgreSQL<br/>(inventario schema)
+
+    Note over C,DB: CDU 505: Carga Masiva de Películas
+    
+    C->>F: Prepara JSON con listado de películas
+    F->>AG: POST /inventario/catalog/movies/bulk-upsert {BulkPayload}
+    AG->>IC: Enruta request
+    IC->>DB: SELECT * FROM fn_bulk_upsert_movies($json,$created_by)
+    DB-->>IC: {inserted: N, updated: M}
+    IC-->>AG: Resultado
+    AG-->>F: Confirmación
+    F-->>C: Resumen: N insertadas, M actualizadas

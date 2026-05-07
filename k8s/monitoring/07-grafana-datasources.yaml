@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: monitoring
+  labels:
+    app: grafana
+data:
+  prometheus.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://prometheus:9090
+      basicAuth: false
+      isDefault: true
+      editable: true
+      jsonData:
+        httpMethod: POST
+        timeInterval: 15s
+    
+    - name: Elasticsearch
+      type: elasticsearch
+      access: proxy
+      orgId: 1
+      url: http://elasticsearch.logging.svc.cluster.local:9200
+      database: "chapinflix-logs-*"
+      basicAuth: false
+      isDefault: false
+      editable: true
+      jsonData:
+        esVersion: "8.11.0"
+        timeField: "@timestamp"
+        logMessageField: message
+        logLevelField: log.level

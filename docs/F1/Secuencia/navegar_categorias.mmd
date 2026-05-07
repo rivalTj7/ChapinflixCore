@@ -1,0 +1,59 @@
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant VC as Ver Catálogo Service<br/>(Puerto 8003)
+    participant DB as PostgreSQL<br/>(content schema)
+
+    Note over U,DB: CDU 203: Navegar por Categorías (Extend: CDU 201)
+    
+    U->>F: Usuario quiere explorar por categorías
+    F->>F: Verificar autenticación opcional
+    
+    F->>AG: GET /vercatalogo/catalog/categories
+    AG->>VC: Enruta a vercatalogo-service:8000→8003
+    
+    VC->>DB: Obtener todas las categorías disponibles
+    Note right of DB: SELECT * FROM content.fn_catalog_categories()
+    Note right of DB: SELECT category_id, name, slug, parent_id<br/>FROM category WHERE is_active = TRUE<br/>ORDER BY name
+    
+    DB-->>VC: Lista de categorías activas
+    VC-->>AG: Array de Category objects
+    AG-->>F: Categorías disponibles
+    
+    F->>F: Renderizar menú de categorías
+    F-->>U: Mostrar categorías:<br/>• Acción, Drama, Aventura<br/>• Chapina, Fantasia, etc.
+    
+    U->>F: Selecciona categoría (ej: "aventura")
+    F->>AG: GET /vercatalogo/catalog/category/aventura?limit=20&offset=0
+    AG->>VC: Enruta a vercatalogo-service:8000→8003
+    
+    VC->>VC: Extraer user_id si autenticado
+    VC->>VC: Normalizar slug a lowercase
+    
+    VC->>DB: Obtener películas de la categoría
+    Note right of DB: SELECT * FROM content.fn_catalog_by_category($1, $2, $3, $4)<br/>Parámetros: slug="aventura", user_id, limit=20, offset=0
+    Note right of DB: JOIN movie_category mc ON mc.movie_id = m.id<br/>JOIN category cat ON cat.id = mc.category_id<br/>WHERE cat.slug = 'aventura' AND cat.is_active = TRUE<br/>Filtros según suscripción usuario
+    
+    DB-->>VC: Películas de categoría "aventura"
+    VC-->>AG: CarouselResponse con películas filtradas
+    AG-->>F: Contenido de la categoría
+    
+    F->>F: Renderizar página de categoría
+    F-->>U: Página categoría "Aventura":<br/>• Grid de películas<br/>• Paginación disponible<br/>• Filtrado según suscripción
+    
+    alt Usuario quiere más contenido (paginación)
+        U->>F: Scroll/click "Cargar más"
+        F->>AG: GET /vercatalogo/catalog/category/aventura?limit=20&offset=20
+        AG->>VC: Enruta con nuevo offset
+        
+        VC->>DB: Obtener siguiente página
+        Note right of DB: Misma función con offset=20
+        DB-->>VC: Más películas de la categoría
+        
+        VC-->>AG: Siguiente página de resultados
+        AG-->>F: Más contenido
+        F-->>U: Cargar más películas en la vista
+    end
+    
+    Note over U,DB: Extend CDU 201: Alternativa a carruseles generales<br/>Usuario navega específicamente por género/categoría

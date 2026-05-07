@@ -1,0 +1,307 @@
+{
+  "info": {
+    "name": "ChapinFlix - Recomendaciones",
+    "description": "Microservicio de recomendaciones con IA (gRPC + REST)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://34.135.146.173.nip.io/vercatalogo/catalog",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "YOUR_USER_TOKEN_HERE",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Recomendaciones Generales (Sin Auth)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=general&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "general",
+              "description": "Tipo: general, genre, collaborative"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Cantidad de recomendaciones (1-20)"
+            }
+          ]
+        },
+        "description": "Recomendaciones populares para todos los usuarios. NO requiere autenticación."
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recommendations/for-you?rec_type=general&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["recommendations", "for-you"],
+              "query": [
+                {
+                  "key": "rec_type",
+                  "value": "general"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"items\": [\n    {\n      \"movie_id\": \"68d3a2ca64a644f1e38b31a8\",\n      \"title\": \"short2\",\n      \"slug\": \"short2\",\n      \"synopsis_short\": \"Test clip\",\n      \"poster_url\": \"\",\n      \"classification_code\": \"\",\n      \"duration_minutes\": 0,\n      \"is_free\": false,\n      \"view_count\": null,\n      \"upload_date\": null,\n      \"last_viewed\": null,\n      \"watch_count\": null\n    },\n    {\n      \"movie_id\": \"68d30ac14ce9c1cd06f162fa\",\n      \"title\": \"attack on titan\",\n      \"slug\": \"aot\",\n      \"synopsis_short\": \"Test clip\",\n      \"poster_url\": \"\",\n      \"classification_code\": \"\",\n      \"duration_minutes\": 0,\n      \"is_free\": true,\n      \"view_count\": null,\n      \"upload_date\": null,\n      \"last_viewed\": null,\n      \"watch_count\": null\n    }\n  ],\n  \"total\": 2\n}"
+        }
+      ]
+    },
+    {
+      "name": "Recomendaciones por Género (Requiere Auth)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=genre&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "genre",
+              "description": "Basado en géneros favoritos del usuario"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Recomendaciones basadas en los géneros favoritos del usuario según su historial. Requiere autenticación."
+      },
+      "response": []
+    },
+    {
+      "name": "Recomendaciones Colaborativas (Requiere Auth)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=collaborative&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "collaborative",
+              "description": "Basado en usuarios con gustos similares"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Recomendaciones basadas en lo que vieron usuarios con gustos similares (collaborative filtering). Requiere autenticación."
+      },
+      "response": []
+    },
+    {
+      "name": "Recomendaciones - Límite Mínimo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=general&limit=3",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "general"
+            },
+            {
+              "key": "limit",
+              "value": "3"
+            }
+          ]
+        },
+        "description": "Ejemplo con límite pequeño"
+      },
+      "response": []
+    },
+    {
+      "name": "Recomendaciones - Límite Máximo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=general&limit=20",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "general"
+            },
+            {
+              "key": "limit",
+              "value": "20"
+            }
+          ]
+        },
+        "description": "Máximo de 20 recomendaciones"
+      },
+      "response": []
+    },
+    {
+      "name": "Error - Sin Autenticación (genre)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=genre&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "genre"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Debería retornar 401 Unauthorized"
+      },
+      "response": [
+        {
+          "name": "401 Unauthorized",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recommendations/for-you?rec_type=genre&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["recommendations", "for-you"],
+              "query": [
+                {
+                  "key": "rec_type",
+                  "value": "genre"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"detail\": \"Authentication required for personalized recommendations\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Error - Tipo Inválido",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/recommendations/for-you?rec_type=invalid&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["recommendations", "for-you"],
+          "query": [
+            {
+              "key": "rec_type",
+              "value": "invalid"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Debería retornar 400 Bad Request"
+      },
+      "response": [
+        {
+          "name": "400 Bad Request",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/recommendations/for-you?rec_type=invalid&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["recommendations", "for-you"],
+              "query": [
+                {
+                  "key": "rec_type",
+                  "value": "invalid"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"detail\": \"Invalid recommendation type\"\n}"
+        }
+      ]
+    }
+  ]
+}

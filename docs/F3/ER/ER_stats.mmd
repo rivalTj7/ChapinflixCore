@@ -1,0 +1,93 @@
+erDiagram
+    %% Tabla externa de referencia (otro microservicio)
+    APP_USERS {
+        integer id PK "Referencia externa"
+        varchar username
+        varchar email
+    }
+
+    %% Tablas del schema stats
+    USER_SUBSCRIPTIONS {
+        serial id PK
+        integer user_id FK
+        varchar subscription_type "monthly, annual, free_trial"
+        varchar status "active, cancelled, expired"
+        timestamp started_at
+        timestamp expires_at
+        timestamp cancelled_at
+        decimal amount_paid
+        varchar currency
+        text notes
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CONTENT_VIEWS {
+        serial id PK
+        integer user_id FK
+        varchar content_id "MongoDB ObjectId"
+        varchar content_type "movie, series, episode"
+        varchar content_title
+        varchar content_slug
+        varchar genre
+        integer view_duration_seconds
+        integer total_duration_seconds
+        boolean completed
+        varchar user_age_group "13-17, 18-24, etc"
+        varchar user_gender
+        varchar device_type
+        timestamp viewed_at
+    }
+
+    CONTENT_LIKES {
+        serial id PK
+        integer user_id FK
+        varchar content_id "MongoDB ObjectId"
+        varchar content_type
+        varchar content_title
+        varchar like_type "like, dislike"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    %% Vistas
+    V_ACTIVE_SUBSCRIPTIONS {
+        integer id
+        integer user_id
+        varchar username
+        varchar email
+        varchar subscription_type
+        timestamp started_at
+        timestamp expires_at
+        decimal amount_paid
+    }
+
+    V_TOP_CONTENT {
+        varchar content_id
+        varchar content_title
+        varchar content_type
+        varchar genre
+        bigint view_count
+        bigint completed_count
+        numeric avg_view_duration
+    }
+
+    V_CONTENT_REACTIONS {
+        varchar content_id
+        varchar content_title
+        varchar content_type
+        bigint likes
+        bigint dislikes
+        bigint total_reactions
+    }
+
+    %% Relaciones
+    APP_USERS ||--o{ USER_SUBSCRIPTIONS : "tiene"
+    APP_USERS ||--o{ CONTENT_VIEWS : "registra"
+    APP_USERS ||--o{ CONTENT_LIKES : "genera"
+
+    %% Relaciones de vistas con tablas base
+    USER_SUBSCRIPTIONS ||--o{ V_ACTIVE_SUBSCRIPTIONS : "filtra activas"
+    APP_USERS ||--o{ V_ACTIVE_SUBSCRIPTIONS : "join"
+    CONTENT_VIEWS ||--o{ V_TOP_CONTENT : "agrupa"
+    CONTENT_LIKES ||--o{ V_CONTENT_REACTIONS : "agrupa"

@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend
+    participant AG as API Gateway<br/>(Ingress)
+    participant VP as Ver Película Service<br/>(Puerto 8004)
+    participant DB as PostgreSQL<br/>(content schema)
+
+    Note over U,DB: CDU 301: Consultar Detalles de Película
+    
+    U->>F: Selecciona una película en catálogo
+    F->>AG: GET /verpeli/movie/{slug}
+    AG->>VP: Enruta a verpeli-service:8000→8004
+    
+    VP->>DB: Consultar detalles por slug
+    Note right of DB: SELECT * FROM content.fn_movie_detail_by_slug($1)
+    DB-->>VP: Datos de la película (titulo, sinopsis,<br/>categorías, imágenes, disponibilidad, is_free)
+    
+    alt Película encontrada
+        VP-->>AG: MovieDetail JSON
+        AG-->>F: Respuesta con detalles
+        F-->>U: Mostrar ficha de la película
+    else No encontrada
+        VP-->>AG: HTTP 404
+        AG-->>F: Error película no encontrada
+        F-->>U: Mostrar error
+    end

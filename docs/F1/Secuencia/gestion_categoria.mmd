@@ -1,0 +1,68 @@
+sequenceDiagram
+    participant C as Content Handler
+    participant F as Frontend Admin
+    participant AG as API Gateway<br/>(Ingress)
+    participant IC as Inventario Service<br/>(Puerto 8001)
+    participant DB as PostgreSQL<br/>(inventario schema)
+
+    Note over C,DB: CDU 502–504: Gestión de Categorías
+    
+    %% Reemplazar categorías de una película
+    C->>F: Reemplazar categorías de película
+    F->>AG: PUT /inventario/catalog/movies/{id}/categories {slugs}
+    AG->>IC: Enruta request
+    IC->>DB: SELECT fn_movie_set_categories($id,$slugs)
+    DB-->>IC: OK
+    IC-->>AG: {ok:true}
+    AG-->>F: Confirmación
+    F-->>C: Categorías actualizadas
+
+    %% Agregar categoría a película
+    C->>F: Agregar categoría
+    F->>AG: POST /inventario/catalog/movies/{id}/categories/{slug}
+    AG->>IC: Enruta request
+    IC->>DB: SELECT fn_movie_add_category($id,$slug)
+    DB-->>IC: OK
+    IC-->>AG: {ok:true}
+    AG-->>F: Confirmación
+    F-->>C: Categoría añadida
+
+    %% Quitar categoría de película
+    C->>F: Eliminar categoría
+    F->>AG: DELETE /inventario/catalog/movies/{id}/categories/{slug}
+    AG->>IC: Enruta request
+    IC->>DB: SELECT fn_movie_remove_category($id,$slug)
+    DB-->>IC: OK
+    IC-->>AG: {ok:true}
+    AG-->>F: Confirmación
+    F-->>C: Categoría removida
+
+    %% Gestión de categorías del sistema
+    alt Crear categoría
+        C->>F: Completa formulario
+        F->>AG: POST /inventario/catalog/categories {CategoryCreate}
+        AG->>IC: Enruta request
+        IC->>DB: SELECT fn_category_create(...)
+        DB-->>IC: category_id
+        IC-->>AG: {category_id}
+        AG-->>F: Confirmación
+        F-->>C: Categoría creada
+    else Modificar categoría
+        C->>F: Edita categoría
+        F->>AG: PATCH /inventario/catalog/categories/{id}
+        AG->>IC: Enruta request
+        IC->>DB: SELECT fn_category_update(...)
+        DB-->>IC: OK
+        IC-->>AG: {ok:true}
+        AG-->>F: Confirmación
+        F-->>C: Categoría actualizada
+    else Eliminar categoría
+        C->>F: Marca como inactiva
+        F->>AG: DELETE /inventario/catalog/categories/{id}
+        AG->>IC: Enruta request
+        IC->>DB: SELECT fn_category_soft_delete($id)
+        DB-->>IC: OK
+        IC-->>AG: {ok:true}
+        AG-->>F: Confirmación
+        F-->>C: Categoría eliminada (soft)
+    end
